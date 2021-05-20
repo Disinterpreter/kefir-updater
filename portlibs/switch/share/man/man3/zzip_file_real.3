@@ -1,0 +1,46 @@
+.TH "zzip_file_real" "3" "0\&.13\&.69" "zziplib" "zziplib Function List"
+.ie \n(.g .ds Aq \(aq
+.el        .ds Aq 
+.nh
+.ad l
+.SH "NAME"
+zzip_file_real, zzip_dir_real, zzip_realdir, zzip_realfd \-  check real or zipped file\&. 
+.SH "SYNOPSIS"
+.sp
+.nf
+.B "#include <zzip/lib\&.h>"
+.B ""
+.sp
+int
+\fIzzip_file_real\fR(ZZIP_FILE * fp)
+
+int
+\fIzzip_dir_real\fR(ZZIP_DIR * dir)
+
+void *
+\fIzzip_realdir\fR(ZZIP_DIR * dir)
+
+int
+\fIzzip_realfd\fR(ZZIP_FILE * fp)
+
+
+.fi
+.sp
+.SH "DESCRIPTION"
+ The \fIzzip_file_real\fP function checks if the ZZIP_FILE-handle is wrapping a real file or a zip-contained file. Returns 1 for a stat'able file, and 0 for a file inside a zip-archive.  
+.sp
+ The \fIzzip_dir_real\fP function checks if the ZZIP_DIR-handle is wrapping a real directory or a zip-archive. Returns 1 for a stat'able directory, and 0 for a handle to zip-archive.  
+.sp
+ The \fIzzip_realdir\fP function returns the posix DIR* handle (if one exists). Check before with \fIzzip_dir_real\fP if the the ZZIP_DIR points to a real directory.  
+.sp
+ The \fIzzip_realfd\fP function returns the posix file descriptor (if one exists). Check before with \fIzzip_file_real\fP if the the ZZIP_FILE points to a real file.  
+.sp
+.sp
+.SH "AUTHOR"
+ Guido Draheim <guidod@gmx.de> 
+.sp
+.sp
+.SH "COPYRIGHT"
+ Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)  
+.sp
+.sp

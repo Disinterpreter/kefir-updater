@@ -1,0 +1,54 @@
+.TH "zzip_disk_entry_to_data" "3" "0\&.13\&.69" "zziplib" "zziplib Function List"
+.ie \n(.g .ds Aq \(aq
+.el        .ds Aq 
+.nh
+.ad l
+.SH "NAME"
+zzip_disk_entry_to_data, zzip_disk_entry_to_file_header, zzip_disk_entry_strdup_name, zzip_disk_entry_strdup_comment \-  helper functions for (mmapped) zip access api 
+.SH "SYNOPSIS"
+.sp
+.nf
+.B "#include <zzip/mmapped\&.h>"
+.B ""
+.sp
+zzip_byte_t *
+\fIzzip_disk_entry_to_data\fR(ZZIP_DISK * disk, struct zzip_disk_entry * entry)
+
+struct zzip_file_header *
+\fIzzip_disk_entry_to_file_header\fR(ZZIP_DISK * disk, struct zzip_disk_entry *entry)
+
+zzip__new__ char *
+\fIzzip_disk_entry_strdup_name\fR(ZZIP_DISK * disk, struct zzip_disk_entry *entry)
+
+zzip__new__ char *
+\fIzzip_disk_entry_strdup_comment\fR(ZZIP_DISK * disk, struct zzip_disk_entry *entry)
+
+
+.fi
+.sp
+.SH "DESCRIPTION"
+ The \fIzzip_disk_entry_to_data\fP function augments the other zzip_disk_entry_* helpers: here we move a disk_entry pointer (as returned by _find* functions) into a pointer to the data block right after the file_header. Only disk->buffer would be needed to perform the seek but we check the mmapped range end as well. 
+.sp
+ The \fIzzip_disk_entry_to_data\fP function returns a pointer into disk->buffer or 0 on error (errno).  
+.sp
+ The \fIzzip_disk_entry_to_file_header\fP function does half the job of \fIzzip_disk_entry_to_data\fP where it can augment with \fIzzip_file_header_to_data\fP helper from format/fetch.h 
+.sp
+ The \fIzzip_disk_entry_to_file_header\fP function returns a pointer into disk->buffer or 0 on error (errno).  
+.sp
+ The \fIzzip_disk_entry_strdup_name\fP function is a big helper despite its little name: in a zip file the encoded filenames are usually NOT zero-terminated but for common usage with libc we need it that way. Secondly, the filename SHOULD be present in the zip central directory but if not then we fallback to the filename given in the file_header of each compressed data portion. 
+.sp
+ The \fIzzip_disk_entry_strdup_name\fP function returns a new string buffer, or null on error. If no name can be found then an empty string is returned.  
+.sp
+ The \fIzzip_disk_entry_strdup_comment\fP function is similar creating a reference to a zero terminated string but it can only exist in the zip central directory entry. 
+.sp
+ The \fIzzip_disk_entry_strdup_comment\fP function returns a new string buffer, or null on error (errno). If no name can be found then an empty string is returned.  
+.sp
+.sp
+.SH "AUTHOR"
+ Guido Draheim <guidod@gmx.de> 
+.sp
+.sp
+.SH "COPYRIGHT"
+ Copyright (c)Guido Draheim, use under copyleft (LGPL,MPL)  
+.sp
+.sp

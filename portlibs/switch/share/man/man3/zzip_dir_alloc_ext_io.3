@@ -1,0 +1,47 @@
+.TH "zzip_dir_alloc_ext_io" "3" "0\&.13\&.69" "zziplib" "zziplib Function List"
+.ie \n(.g .ds Aq \(aq
+.el        .ds Aq 
+.nh
+.ad l
+.SH "NAME"
+zzip_dir_alloc_ext_io, zzip_dir_alloc, zzip_dir_free \-  start usage\&.  
+.SH "SYNOPSIS"
+.sp
+.nf
+.B "#include <zzip/lib\&.h>"
+.B ""
+.sp
+ZZIP_DIR *
+\fIzzip_dir_alloc_ext_io\fR(zzip_strings_t * ext, const zzip_plugin_io_t io)
+
+ZZIP_DIR *
+\fIzzip_dir_alloc\fR(zzip_strings_t * fileext)
+
+int
+\fIzzip_dir_free\fR(ZZIP_DIR * dir)
+
+
+.fi
+.sp
+.SH "DESCRIPTION"
+ The \fIzzip_dir_alloc_ext_io\fP function allocates a new ZZIP_DIR handle and do basic initializations before usage by \fIzzip_dir_fdopen\fP \fIzzip_dir_open\fP \fIzzip_file_open\fP or through \fIzzip_open\fP (ext==null flags uses { ".zip" , ".ZIP" } ) (io ==null flags use of posix io defaults)  
+.sp
+ The \fIzzip_dir_alloc\fP function is obsolete - it was generally used for implementation and exported to let other code build on it. It is now advised to use \fIzzip_dir_alloc_ext_io\fP now on explicitly, just set that second argument to zero to achieve the same functionality as the old style.  
+.sp
+ The \fIzzip_dir_free\fP function will free the zzip_dir handle unless there are still zzip_files attached (that may use its cache buffer). This is the inverse of \fIzzip_dir_alloc\fP , and both are helper functions used implicitly in other zzipcalls e.g. \fIzzip_dir_close\fP = zzip_close 
+.sp
+ returns zero on success returns the refcount when files are attached.  
+.sp
+.sp
+.SH "AUTHOR"
+ Guido Draheim <guidod@gmx.de> Tomi Ollila <too@iki.fi> 
+.sp
+.sp
+.SH "COPYRIGHT"
+ Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)  
+.sp
+.sp
+.SH "SEE ALSO"
+ zzip_dir_free 
+.sp
+.sp

@@ -8,6 +8,7 @@
 #include "main_frame.hpp"
 #include <filesystem>
 #include <fstream>
+#include "reboot_payload.h"
 
 namespace i18n = brls::i18n;
 using namespace i18n::literals;
@@ -148,8 +149,17 @@ void extractArchive(archiveType type, std::string tag){
             break;
         case archiveType::cfw:
             if(isArchive(CFW_FILENAME)){
-                overwriteInis = showDialogBox("menus/utils/overwrite_inis"_i18n, "menus/common/no"_i18n, "menus/common/yes"_i18n);
-                extract::extract(CFW_FILENAME, ROOT_PATH, overwriteInis);
+                if(!std::filesystem::exists(KEFIR_DIRECTORY_PATH))
+                    std::filesystem::create_directory(KEFIR_DIRECTORY_PATH);
+                overwriteInis = 1;
+                extract::extract(CFW_FILENAME, KEFIR_DIRECTORY_PATH, overwriteInis);
+
+                if(std::filesystem::exists("/kefir/bootloader/payloads/TegraExplorer.bin")) {
+                    fs::copyFile("/kefir/bootloader/payloads/TegraExplorer.bin", "/payload.bin");
+                } 
+                if(std::filesystem::exists("/kefir/switch/kefirupdater/startup.te")) {
+                    fs::copyFile("/kefir/switch/kefirupdater/startup.te", "/startup.te");
+                } 
             }
             else{
                 brls::Application::crash("menus/utils/wrong_type_cfw"_i18n);

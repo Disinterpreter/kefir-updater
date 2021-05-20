@@ -1,0 +1,41 @@
+.TH "zzip_dir_stat" "3" "0\&.13\&.69" "zziplib" "zziplib Function List"
+.ie \n(.g .ds Aq \(aq
+.el        .ds Aq 
+.nh
+.ad l
+.SH "NAME"
+zzip_dir_stat, zzip_file_stat, zzip_fstat \-     get meta infornation on a zipped element\&. 
+.SH "SYNOPSIS"
+.sp
+.nf
+.B "#include <zzip/lib\&.h>"
+.B ""
+.sp
+int
+\fIzzip_dir_stat\fR(ZZIP_DIR * dir, zzip_char_t * name, ZZIP_STAT * zs, int flags)
+
+int
+\fIzzip_file_stat\fR(ZZIP_FILE * file, ZZIP_STAT * zs)
+
+int
+\fIzzip_fstat\fR(ZZIP_FILE * file, ZZIP_STAT * zs)
+
+
+.fi
+.sp
+.SH "DESCRIPTION"
+ The \fIzzip_dir_stat\fP function obtains information about a filename in an opened zip-archive without opening that file first. Mostly used to obtain the uncompressed size of a file inside a zip-archive. see \fIzzip_dir_open\fP.  
+.sp
+ The \fIzzip_file_stat\fP function will obtain information about a opened file _within_ a zip-archive. The file is supposed to be open (otherwise -1 is returned). The st_size stat-member contains the uncompressed size. The optional d_name is never set here.  
+.sp
+ The \fIzzip_fstat\fP function will obtain information about a opened file which may be either real/zipped. The file is supposed to be open (otherwise -1 is returned). The st_size stat-member contains the uncompressed size. The optional d_name is never set here. For a real file, we do set the d_csize := st_size and d_compr := 0 for meaningful defaults.  
+.sp
+.sp
+.SH "AUTHOR"
+ 	Guido Draheim <guidod@gmx.de> 	Tomi Ollila <Tomi.Ollila@iki.fi> 
+.sp
+.sp
+.SH "COPYRIGHT"
+ Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)  
+.sp
+.sp

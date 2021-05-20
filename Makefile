@@ -15,20 +15,20 @@ include $(DEVKITPRO)/libnx/switch_rules
 # SOURCES is a list of directories containing source code
 # DATA is a list of directories containing data files
 # INCLUDES is a list of directories containing header files
-BUILD		:=	build
+BUILD			:=	build
 SOURCES		:=	source lib/zipper/source
 RESOURCES	:=	resources
-DATA		:=	data
-INCLUDES	:=	include lib/zipper/include /lib/borealis/library/include/borealis/extern/nlohmann
-APP_TITLE	:=	All-in-One Switch Updater
-APP_AUTHOR	:=	HamletDuFromage
+DATA			:=	data
+INCLUDES		:=	include lib/zipper/include /lib/borealis/library/include/borealis/extern/nlohmann
+APP_TITLE	:=	Kefir Updater
+APP_AUTHOR	:=	HamletDuFromage, forked by xHR
 APP_VERSION :=  2.4.9
 TARGET		:=	$(notdir $(CURDIR))
 
-ROMFS				:=	resources
-BOREALIS_PATH		:=	lib/borealis
+ROMFS						:=	resources
+BOREALIS_PATH			:=	lib/borealis
 BOREALIS_RESOURCES	:=	romfs:/
-#APP_RESOURCES		:=	romfs:/
+#APP_RESOURCES			:=	romfs:/
 
 #---------------------------------------------------------------------------------
 # version control constants
@@ -81,9 +81,9 @@ export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
 export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 
 CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
-CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
+CPPFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
-BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
+BINFILES		:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
 
 #---------------------------------------------------------------------------------
 # use CXX for linking C++ projects, CC for standard C
@@ -183,6 +183,13 @@ else
 	@rm -fr $(BUILD) $(TARGET).nsp $(TARGET).nso $(TARGET).npdm $(TARGET).elf
 endif
 
+nxlink:
+	nxlink -a 192.168.1.120 -p /kefirupdater/kefir-updater.nro kefir-updater.nro
+
+libnx:
+	cd libnx
+	git reset --hard 00d1a696b923cdb056ac324db2433bae43672370
+	make install
 
 #---------------------------------------------------------------------------------
 else

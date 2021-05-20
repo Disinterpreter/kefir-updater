@@ -1,0 +1,40 @@
+.TH "zzip_seek" "3" "0\&.13\&.69" "zziplib" "zziplib Function List"
+.ie \n(.g .ds Aq \(aq
+.el        .ds Aq 
+.nh
+.ad l
+.SH "NAME"
+zzip_seek, zzip_seek32 \-  seek\&. 
+.SH "SYNOPSIS"
+.sp
+.nf
+.B "#include <zzip/lib\&.h>"
+.B ""
+.sp
+zzip_off_t
+\fIzzip_seek\fR(ZZIP_FILE * fp, zzip_off_t offset, int whence)
+
+long
+\fIzzip_seek32\fR(ZZIP_FILE * fp, long offset, int whence)
+
+
+.fi
+.sp
+.SH "DESCRIPTION"
+ The \fIzzip_seek\fP function will perform a \fIlseek(2)\fP operation on a real/zipped file 
+.sp
+ It will try to seek to the offset specified by offset, relative to whence, which is one of SEEK_SET, SEEK_CUR or SEEK_END. 
+.sp
+ If the file-handle is wrapping a stat'able file then it will actually just perform a normal \fIlseek(2)\fP-call. Otherwise the relative offset is calculated, negative offsets are transformed into positive ones by rewinding the file, and then data is read until the offset is reached. This can make the function terribly slow, but this is how gzio implements it, so I'm not sure there is a better way without using the internals of the algorithm.  
+.sp
+ The \fIzzip_seek32\fP function is provided for users who can not use any largefile-mode.  
+.sp
+.sp
+.SH "AUTHOR"
+ Guido Draheim <guidod@gmx.de> Tomi Ollila <Tomi.Ollila@iki.fi> 
+.sp
+.sp
+.SH "COPYRIGHT"
+ Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)  
+.sp
+.sp

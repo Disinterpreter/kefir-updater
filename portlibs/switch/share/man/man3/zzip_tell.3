@@ -1,0 +1,40 @@
+.TH "zzip_tell" "3" "0\&.13\&.69" "zziplib" "zziplib Function List"
+.ie \n(.g .ds Aq \(aq
+.el        .ds Aq 
+.nh
+.ad l
+.SH "NAME"
+zzip_tell, zzip_tell32 \-  tell\&. 
+.SH "SYNOPSIS"
+.sp
+.nf
+.B "#include <zzip/lib\&.h>"
+.B ""
+.sp
+zzip_off_t
+\fIzzip_tell\fR(ZZIP_FILE * fp)
+
+long
+\fIzzip_tell32\fR(ZZIP_FILE * fp)
+
+
+.fi
+.sp
+.SH "DESCRIPTION"
+ The \fIzzip_tell\fP function will \fItell(2)\fP the current position in a real/zipped file 
+.sp
+ It will return the current offset within the real/zipped file, measured in uncompressed bytes for the zipped-file case. 
+.sp
+ If the file-handle is wrapping a stat'able file then it will actually just perform a normal \fItell(2)\fP-call, otherwise the offset is calculated from the amount of data left and the total uncompressed size;  
+.sp
+ The \fIzzip_tell32\fP function is provided for users who can not use any largefile-mode.  
+.sp
+.sp
+.SH "AUTHOR"
+ Guido Draheim <guidod@gmx.de> Tomi Ollila <Tomi.Ollila@iki.fi> 
+.sp
+.sp
+.SH "COPYRIGHT"
+ Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)  
+.sp
+.sp

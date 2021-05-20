@@ -1,0 +1,34 @@
+.TH "zzip_strerror" "3" "0\&.13\&.69" "zziplib" "zziplib Function List"
+.ie \n(.g .ds Aq \(aq
+.el        .ds Aq 
+.nh
+.ad l
+.SH "NAME"
+zzip_strerror, zzip_strerror_of \- \&.\&.\&. 
+.SH "SYNOPSIS"
+.sp
+.nf
+.B "#include <zzip/lib\&.h>"
+.B ""
+.sp
+zzip_char_t *
+\fIzzip_strerror\fR(int errcode)
+
+zzip_char_t *
+\fIzzip_strerror_of\fR(ZZIP_DIR * dir)
+
+
+.fi
+.sp
+.SH "DESCRIPTION"
+ The \fIzzip_strerror_of\fP function fetches the errorcode from the \fIDIR-handle\fP and runs it through \fIzzip_strerror\fP to obtain the static string describing the error.  
+.sp
+.sp
+.SH "AUTHOR"
+ Guido Draheim <guidod@gmx.de> Tomi Ollila <Tomi.Ollila@iki.fi> 
+.sp
+.sp
+.SH "COPYRIGHT"
+ Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)  
+.sp
+.sp

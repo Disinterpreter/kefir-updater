@@ -47,12 +47,8 @@ ListDownloadTab::ListDownloadTab(const archiveType type) :
             break;
         case archiveType::cfw:
             links = download::getLinks(CFW_URL);
-            sxoslinks = download::getLinks(SXOS_URL);
-            links.insert(links.end(), sxoslinks.begin(), sxoslinks.end());
             operation += "menus/main/cfw"_i18n;
-            this->description->setText(
-                "menus/main/cfw_text"_i18n 
-            );
+            this->description = new brls::Label(brls::LabelStyle::MEDIUM, (CurrentCfw::running_cfw == CFW::ams ? "\n" + "menus/ams_update/current_ams"_i18n + CurrentCfw::getAmsInfo() : ""), true);
             break;
         case archiveType::cheats:
             auto cheatsVerVec = download::downloadFile(CHEATS_URL_VERSION);

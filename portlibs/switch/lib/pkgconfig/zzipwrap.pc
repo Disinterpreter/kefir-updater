@@ -1,0 +1,10 @@
+prefix=/opt/devkitpro/portlibs/switch
+libdir=/opt/devkitpro/portlibs/switch/lib
+includedir=/opt/devkitpro/portlibs/switch/include
+ 
+Name: zzipwrap
+Version: 0.13.69
+Description: Callback Wrappers for ZZipLib
+Requires: zziplib
+Libs: -L${libdir} -lzzipwrap
+Cflags: -I${includedir}

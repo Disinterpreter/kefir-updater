@@ -1,0 +1,60 @@
+.TH "zzip_entry_findfile" "3" "0\&.13\&.69" "zziplib" "zziplib Function List"
+.ie \n(.g .ds Aq \(aq
+.el        .ds Aq 
+.nh
+.ad l
+.SH "NAME"
+zzip_entry_findfile, zzip_entry_findfirst, zzip_entry_findnext, zzip_entry_free, zzip_entry_findmatch \-  search for files in the (fseeko) zip central directory 
+.SH "SYNOPSIS"
+.sp
+.nf
+.B "#include <zzip/fseeko\&.h>"
+.B ""
+.sp
+zzip__new__ ZZIP_ENTRY *
+\fIzzip_entry_findfile\fR(FILE * disk, char *filename,
+                    ZZIP_ENTRY * _zzip_restrict entry, zzip_strcmp_fn_t compare)
+
+zzip__new__ ZZIP_ENTRY *
+\fIzzip_entry_findfirst\fR(FILE * disk)
+
+zzip__new__ ZZIP_ENTRY *
+\fIzzip_entry_findnext\fR(ZZIP_ENTRY * _zzip_restrict entry)
+
+int
+\fIzzip_entry_free\fR(ZZIP_ENTRY * entry)
+
+zzip__new__ ZZIP_ENTRY *
+\fIzzip_entry_findmatch\fR(FILE * disk, char *filespec,
+                     ZZIP_ENTRY * _zzip_restrict entry,
+                     zzip_fnmatch_fn_t compare, int flags)
+
+
+.fi
+.sp
+.SH "DESCRIPTION"
+ The \fIzzip_entry_findfile\fP function is given a filename as an additional argument, to find the disk_entry matching a given filename. The compare-function is usually strcmp or strcasecmp or perhaps strcoll, if null then strcmp is used. - use null as argument for "old"-entry when searching the first matching entry, otherwise the last returned value if you look for other entries with a special "compare" function (if null then a doubled search is rather useless with this variant of _findfile). If no further entry is found then null is returned and any "old"-entry gets already free()d.  
+.sp
+ The \fIzzip_entry_findfirst\fP function is the first call of all the zip access functions here. It contains the code to find the first entry of the zip central directory. Here we require the stdio handle to represent a real zip file where the disk_trailer is _last_ in the file area, so that its position would be at a fixed offset from the end of the file area if not for the comment field allowed to be of variable length (which needs us to do a little search for the disk_tailer). However, in this simple implementation we disregard any disk_trailer info telling about multidisk archives, so we just return a pointer to the first entry in the zip central directory of that file. 
+.sp
+ For an actual means, we are going to search backwards from the end of the mmaped block looking for the PK-magic signature of a disk_trailer. If we see one then we check the rootseek value to find the first disk_entry of the root central directory. If we find the correct PK-magic signature of a disk_entry over there then we assume we are done and we are going to return a pointer to that label. 
+.sp
+ The return value is a pointer to the first zzip_disk_entry being checked to be within the bounds of the file area specified by the arguments. If no disk_trailer was found then null is returned, and likewise we only accept a disk_trailer with a seekvalue that points to a disk_entry and both parts have valid PK-magic parts. Beyond some sanity check we try to catch a common brokeness with zip archives that still allows us to find the start of the zip central directory. 
+.sp
+The \fIzzip_entry_findfirst\fP function Returns null on error (errno = EINVAL|ENOMEM|EBADMSG|EBADF|ENOENT)  
+.sp
+ The \fIzzip_entry_findnext\fP function takes an existing "entry" in the central root directory (e.g. from zzip_entry_findfirst) and moves it to point to the next entry. On error it returns 0, otherwise the old entry. If no further match is found then null is returned and the entry already free()d. If you want to stop searching for matches before that case then please call \fIzzip_entry_free\fP on the cursor struct ZZIP_ENTRY.  
+.sp
+ the \fIzzip_entry_free\fP function releases the malloc()ed areas needed for zzip_entry, the pointer is invalid afterwards. The \fIzzip_entry_free\fP function has #define synonyms of zzip_entry_findlast(), zzip_entry_findlastfile(), zzip_entry_findlastmatch()  
+.sp
+ The \fIzzip_entry_findmatch\fP function uses a compare-function with an additional argument and it is called just like fnmatch(3) from POSIX.2 AD:1993), i.e. the argument filespec first and the ziplocal filename second with the integer-flags put in as third to the indirect call. If the platform has fnmatch available then null-compare will use that one and otherwise we fall back to mere strcmp, so if you need fnmatch searching then please provide an implementation somewhere else. - use null as argument for "after"-entry when searching the first matching entry, or the last disk_entry return-value to find the next entry matching the given filespec. If no further entry is found then null is returned and any "old"-entry gets already free()d.  
+.sp
+.sp
+.SH "AUTHOR"
+ Guido Draheim <guidod@gmx.de> 
+.sp
+.sp
+.SH "COPYRIGHT"
+ Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)  
+.sp
+.sp

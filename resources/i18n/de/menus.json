@@ -1,7 +1,7 @@
 {
   "about": {
-    "title": "All-in-One Nintendo Switch Updater",
-    "copyright": "AIO-switch-updater ist lizensiert unter: GPL-3.0\n\u00a9 2020 HamletDuFromage",
+    "title": "Kefir Updater",
+    "copyright": "Kefir Updater ist lizensiert unter: GPL-3.0\n\u00a9  2020 HamletDuFromage, forked by xHR",
     "disclaimers": "\ue016  Außer cheat-codes die vom haupt GBAtemp thread stammen, hostet HamletDuFromage nichts selber. Alle Anerkennung geht an die jeweiligen Besitzer.\n\ue016  Links werden alle 30 Minuten aktualisiert. Wenn ein Link nach 30 Minuten weiterhin nicht funktioniert, eröffne bitte ein Github issue.\n",
     "donate": "\ue016  Gefällt dir die App? Hier kannst du meine Bemühungen unterstützen: 'https://git.io/donate_homlet'"
   },
@@ -90,7 +90,7 @@
   },
   "main": {
     "getting": "Herunterladen: ",
-    "firmware_text": "\ue016  firmware von: 'https://darthsternie.net/switch-firmwares/'. Sobald runtergeladen, wird sie in '/firmware' entpackt . Danach kannst du das Update mit Daybreak oder ChoiDuJour installieren.\n\ue016  Mometnane FW: ",
+    "firmware_text": "\ue016  firmware von: 'https://darthsternie.net/switch-firmwares/'. Sobald runtergeladen, wird sie in '/firmware' entpackt . Danach kannst du das Update mit Daybreak installieren.\n\ue016  Mometnane FW: ",
     "cheats_text": "\uE016  Lade ein täglich geupdatetes Archiv von 'gbatemp.net' runter. Cheats von Spielen die du nicht besitzt, werden nicht entpackt. Du kannst updates für ausgewählte Spiele unter 'Tools->Cheat menu' deaktivieren.\n\uE016  Momentane Cheatversion: ",
     "get_cheats": "Lade GBAtemp.net Cheatarchiv herunter (ver ",
     "sigpatches": "Sigpatches",
@@ -125,7 +125,7 @@
     "dl_payloads": "Lade Payloads hierhin runter: ",
     "inject_payloads": "Injiziere Payload",
     "update_app": "Update die App (v",
-    "dl_app": "Lade herunter:\nAIO-switch-updater\n\nVon:\n",
+    "dl_app": "Lade herunter:\nKefir Updater\n\nVon:\n",
     "changelog": "Changelog",
     "clean_up": "Lösche übrig gebliebende Dateien",
     "hide_tabs": "Tabs verstecken",

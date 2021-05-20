@@ -2,7 +2,30 @@
 #include "utils.hpp"
 #include "main_frame.hpp"
 #include "reboot_payload.h"
+#include "utils.hpp"
 #include <algorithm>
+
+bool isErista() {
+    u64 hwType;
+    Result rc = splGetConfig(SplConfigItem_HardwareType, &hwType);
+
+    if(R_FAILED(rc))
+        return true;
+
+    switch (hwType)
+    {
+        case 0:
+        case 1:
+            return true;
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+            return false;
+        default:
+            return true;
+    }
+};
  
 namespace i18n = brls::i18n;
 using namespace i18n::literals;
@@ -18,7 +41,12 @@ ConfirmPage::ConfirmPage(brls::StagedAppletFrame* frame, std::string text, bool 
             brls::Application::pushView(new MainFrame());
         }
         else if (this->reboot){
-            reboot_to_payload(RCM_PAYLOAD_PATH);
+            if(isErista()) {
+                reboot_to_payload(REBOOT_PAYLOAD_PATH);
+            } else {
+                bpcInitialize();
+                bpcRebootSystem();
+            }
         }
     });
 

@@ -1,0 +1,12 @@
+prefix=/opt/devkitpro/portlibs/switch
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libtimidity
+Description: MIDI to WAVE converter library
+Version: 0.2.6
+URL: http://libtimidity.sourceforge.net/
+Libs: -L${libdir} -ltimidity
+Libs.private:  -lm
+Cflags: -I${includedir}

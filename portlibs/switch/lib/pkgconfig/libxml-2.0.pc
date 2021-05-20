@@ -1,0 +1,13 @@
+prefix=/opt/devkitpro/portlibs/switch
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+modules=0
+
+Name: libXML
+Version: 2.9.8
+Description: libXML library version2.
+Requires:
+Libs: -L${libdir} -lxml2
+Libs.private:  -lpthread -L/opt/devkitpro/portlibs/switch/lib -lz   -lm  -lnx
+Cflags: -I${includedir}/libxml2 

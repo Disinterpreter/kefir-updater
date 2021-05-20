@@ -18,6 +18,14 @@ namespace fs {
         return 0;
     }
 
+    int removeFile(const char* path) {
+        Result ret = 0;
+        FsFileSystem *fs = fsdevGetDeviceFileSystem("sdmc");
+        if (R_FAILED(ret = fsFsDeleteFile(fs, path)))
+            return ret;
+        return 0;
+    }
+
     nlohmann::json parseJsonFile(const char* path) {
         std::ifstream file(path);
 
@@ -95,6 +103,16 @@ namespace fs {
             in.close();
         }
         return titles;
+    }
+
+    std::string readLine(const char * path){
+        // std::string titles;
+        std::string str;
+        std::ifstream in(path);
+        if(in){
+            std::getline(in, str);
+        }
+        return str;
     }
 
 }

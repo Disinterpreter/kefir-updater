@@ -1,0 +1,44 @@
+.TH "zzip_dir_open" "3" "0\&.13\&.69" "zziplib" "zziplib Function List"
+.ie \n(.g .ds Aq \(aq
+.el        .ds Aq 
+.nh
+.ad l
+.SH "NAME"
+zzip_dir_open, zzip_dir_open_ext_io, zzip_dir_read \-  open zip\-archive\&. 
+.SH "SYNOPSIS"
+.sp
+.nf
+.B "#include <zzip/lib\&.h>"
+.B ""
+.sp
+ZZIP_DIR *
+\fIzzip_dir_open\fR(zzip_char_t * filename, zzip_error_t * e)
+
+ZZIP_DIR *
+\fIzzip_dir_open_ext_io\fR(zzip_char_t * filename, zzip_error_t * e,
+                     zzip_strings_t * ext, zzip_plugin_io_t io)
+
+int
+\fIzzip_dir_read\fR(ZZIP_DIR * dir, ZZIP_DIRENT * d)
+
+
+.fi
+.sp
+.SH "DESCRIPTION"
+ The \fIzzip_dir_open\fP function opens the given zip-archive (if available). The two ext_io arguments will default to use posix io and a set of default fileext that can atleast add .zip ext itself.  
+.sp
+ the \fIzzip_dir_open_ext_io\fP function uses explicit ext and io instead of the internal defaults. Setting these to zero is equivalent to \fIzzip_dir_open\fP Note that the referenced ext_io plugin handlers structure must be static as it is not copied to the returned ZZIP_DIR structure.  
+.sp
+ fills the dirent-argument with the values and increments the read-pointer of the dir-argument. 
+.sp
+ returns 0 if there no entry (anymore).  
+.sp
+.sp
+.SH "AUTHOR"
+ Guido Draheim <guidod@gmx.de> Tomi Ollila <too@iki.fi> 
+.sp
+.sp
+.SH "COPYRIGHT"
+ Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)  
+.sp
+.sp

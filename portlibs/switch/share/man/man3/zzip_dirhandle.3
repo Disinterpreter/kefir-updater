@@ -1,0 +1,40 @@
+.TH "zzip_dirhandle" "3" "0\&.13\&.69" "zziplib" "zziplib Function List"
+.ie \n(.g .ds Aq \(aq
+.el        .ds Aq 
+.nh
+.ad l
+.SH "NAME"
+zzip_dirhandle, zzip_dirfd \-  get handle\&. 
+.SH "SYNOPSIS"
+.sp
+.nf
+.B "#include <zzip/lib\&.h>"
+.B ""
+.sp
+ZZIP_DIR *
+\fIzzip_dirhandle\fR(ZZIP_FILE * fp)
+
+int
+\fIzzip_dirfd\fR(ZZIP_DIR * dir)
+
+
+.fi
+.sp
+.SH "DESCRIPTION"
+ The \fIzzip_dirhandle\fP function will just return the fp->dir value. 
+.sp
+ If a ZZIP_FILE is contained within a zip-file that one will be a valid pointer, otherwise a NULL is returned and the ZZIP_FILE wraps a real file.  
+.sp
+ The \fIzzip_dirfd\fP function will just return dir->fd 
+.sp
+ If a ZZIP_DIR does point to a zipfile then the file-descriptor of that zipfile is returned, otherwise a NULL is returned and the ZZIP_DIR wraps a real directory DIR (if you have dirent on your system).  
+.sp
+.sp
+.SH "AUTHOR"
+ Guido Draheim <guidod@gmx.de> 
+.sp
+.sp
+.SH "COPYRIGHT"
+ Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)  
+.sp
+.sp

@@ -48,7 +48,7 @@ void extract(const char * filename, const char* workingPath, int overwriteInis){
         while (it != ignoreList.end() ){
             k = ("/" + entries[i].name).find((*it));
             if(k == 0 || k == 1){
-                isIgnored = true;
+                isIgnored = false;
                 if(!std::filesystem::exists("/" + entries[i].name)){
                     unzipper.extractEntry(entries[i].name);
                 }
@@ -56,18 +56,11 @@ void extract(const char * filename, const char* workingPath, int overwriteInis){
             }
             it++;
         }
-        if(!isIgnored){
-            if(entries[i].name == "sept/payload.bin" || entries[i].name == "atmosphere/fusee-secondary.bin" || entries[i].name == "atmosphere/stratosphere.romfs"){
-                std::ofstream readonlyFile(entries[i].name + ".aio");
-                unzipper.extractEntryToStream(entries[i].name, readonlyFile);
-            }
-            else {
                 unzipper.extractEntry(entries[i].name);
                 if(entries[i].name.substr(0, 13) == "hekate_ctcaer") {
                     fs::copyFile(("/" + entries[i].name).c_str(), UPDATE_BIN_PATH);
                 }
-            }
-        }
+
         
         ProgressEvent::instance().setStep(i);
     }

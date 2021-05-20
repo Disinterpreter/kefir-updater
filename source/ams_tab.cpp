@@ -16,10 +16,10 @@ AmsTab::AmsTab() :
 {
     std::vector<std::pair<std::string, std::string>> links;
     std::string operation("menus/main/getting"_i18n);
-    this->description = new brls::Label(brls::LabelStyle::DESCRIPTION, "menus/main/ams_text"_i18n + (CurrentCfw::running_cfw == CFW::ams ? "\n" + "menus/ams_update/current_ams"_i18n + CurrentCfw::getAmsInfo() : ""), true);
+    this->description = new brls::Label(brls::LabelStyle::MEDIUM, (CurrentCfw::running_cfw == CFW::ams ? "\n" + "menus/ams_update/current_ams"_i18n + CurrentCfw::getAmsInfo() : ""), true);
     this->addView(description);
     operation += "menus/main/ams"_i18n;
-    links = download::getLinks(AMS_URL);
+    links = download::getLinks(CFW_URL);
 
     this->size = links.size();
     if(this->size){
@@ -39,22 +39,11 @@ AmsTab::AmsTab() :
                     new ConfirmPage(stagedFrame, text)
                 );
                 stagedFrame->addStage(
-                    new WorkerPage(stagedFrame, "menus/common/downloading"_i18n, [url](){util::downloadArchive(url, archiveType::ams_cfw);})
+                    new WorkerPage(stagedFrame, "menus/common/downloading"_i18n, [url](){util::downloadArchive(url, archiveType::cfw);})
                 );
                 stagedFrame->addStage(
-                    new WorkerPage(stagedFrame, "menus/common/extracting"_i18n, [](){util::extractArchive(archiveType::ams_cfw);})
+                    new WorkerPage(stagedFrame, "menus/common/extracting"_i18n, [](){util::extractArchive(archiveType::cfw);})
                 );
-                if(url.find("DeepSea") == std::string::npos) {
-                    stagedFrame->addStage(
-                        new DialoguePage(stagedFrame, text_hekate)
-                    );
-                    stagedFrame->addStage(
-                        new WorkerPage(stagedFrame, "menus/common/downloading"_i18n, [hekate_url](){util::downloadArchive(hekate_url, archiveType::cfw);})
-                    );
-                    stagedFrame->addStage(
-                        new WorkerPage(stagedFrame, "menus/common/extracting"_i18n, [](){util::extractArchive(archiveType::cfw);})
-                    );
-                }
                 stagedFrame->addStage(
                     new ConfirmPage(stagedFrame, "menus/ams_update/reboot_rcm"_i18n, false, true)
                 );

@@ -1,7 +1,7 @@
 {
   "about": {
-    "title": "All-in-One Nintendo Switch Updater",
-    "copyright": "AIO-switch-updater依據GNU公共授權條款GPL 3.0版本開發\n© 2020 HamletDuFromage",
+    "title": "Kefir Updater",
+    "copyright": "Kefir Updater依據GNU公共授權條款GPL 3.0版本開發\n©  2020 HamletDuFromage, forked by xHR",
     "disclaimers": "\ue016  HamletDuFromage僅鏡像使用Gbatemp論壇的金手指，伺服器沒有儲存或託管任何相關檔案，感謝所有提供金手指的創作者。\n\ue016  程式檔案資料庫會每隔30分鐘自動擷取更新。如果更新連結超過30分鐘仍無法正常使用，請使用Github提出問題來進行回報。\n",
     "donate": "\ue016  喜歡我們開發的app嗎? 歡迎贊助支持我們持續開發維護: 'https://git.io/donate_homlet'"
   },
@@ -91,7 +91,7 @@
   },
   "main": {
     "getting": "正在擷取 ",
-    "firmware_text": "\ue016  韌體檔案從'https://darthsternie.net/switch-firmwares/'進行轉存。當下載完成後，檔案會放置於資料夾'/firmware'內。你可以透過Daybreak或ChoiDuJour來安裝更新韌體。\n\ue016  目前FW: ",
+    "firmware_text": "\ue016  韌體檔案從'https://darthsternie.net/switch-firmwares/'進行轉存。當下載完成後，檔案會放置於資料夾'/firmware'內。你可以透過Daybreak或來安裝更新韌體。\n\ue016  目前FW: ",
 	"cheats_text": "\uE016  下載'gbatemp.net'每日更新的金手指檔案到記憶卡時，並不會複製到主機未安裝的遊戲金手指檔案。你可以從設定的 '工具->金手指選單' 內停用金手指更新。\n\uE016  目前金手指資料庫版本: ",
     "get_cheats": "下載GBAtemp.net金手指資料庫(版本 ",													 
     "sigpatches": "sigpatches",
@@ -127,7 +127,7 @@
     "dl_payloads": "下載注入檔案的儲存位置",
     "inject_payloads": "載入注入檔案",
     "update_app": "更新app (v",
-    "dl_app": "正在下載:\nAIO-switch-updater\n\n來源:\n",
+    "dl_app": "正在下載:\nKefir Updater\n\n來源:\n",
     "changelog": "更新履歷",
     "clean_up": "清空下載清單",
     "hide_tabs": "Hide tabs",

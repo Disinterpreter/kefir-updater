@@ -1,0 +1,41 @@
+.TH "zzip_opendir" "3" "0\&.13\&.69" "zziplib" "zziplib Function List"
+.ie \n(.g .ds Aq \(aq
+.el        .ds Aq 
+.nh
+.ad l
+.SH "NAME"
+zzip_opendir, zzip_opendir_ext_io \-  start usage\&. 
+.SH "SYNOPSIS"
+.sp
+.nf
+.B "#include <zzip/lib\&.h>"
+.B ""
+.sp
+ZZIP_DIR *
+\fIzzip_opendir\fR(zzip_char_t * filename)
+
+ZZIP_DIR *
+\fIzzip_opendir_ext_io\fR(zzip_char_t * filename, int o_modes,
+                    zzip_strings_t * ext, zzip_plugin_io_t io)
+
+
+.fi
+.sp
+.SH "DESCRIPTION"
+ The \fIzzip_opendir\fP function is the equivalent of \fIopendir(3)\fP for a realdir or zipfile. 
+.sp
+ The \fIzzip_opendir\fP function has some magic - if the given argument-path is a directory, it will wrap a real \fIopendir(3)\fP into the ZZIP_DIR structure. Otherwise it will divert to \fIzzip_dir_open\fP which can also attach a ".zip" extension if needed to find the archive. 
+.sp
+ the error-code is mapped to \fIerrno(3)\fP.  
+.sp
+ The \fIzzip_opendir_ext_io\fP function uses explicit ext and io instead of the internal defaults, setting them to zero is equivalent to \fIzzip_opendir\fP  
+.sp
+.sp
+.SH "AUTHOR"
+ Guido Draheim <guidod@gmx.de> 
+.sp
+.sp
+.SH "COPYRIGHT"
+ Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)  
+.sp
+.sp
