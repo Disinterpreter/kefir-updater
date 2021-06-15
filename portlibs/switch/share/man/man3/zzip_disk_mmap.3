@@ -1,0 +1,72 @@
+.TH "zzip_disk_mmap" "3" "0\&.13\&.69" "zziplib" "zziplib Function List"
+.ie \n(.g .ds Aq \(aq
+.el        .ds Aq 
+.nh
+.ad l
+.SH "NAME"
+zzip_disk_mmap, zzip_disk_init, zzip_disk_new, zzip_disk_munmap, zzip_disk_open, zzip_disk_buffer, zzip_disk_close \-  turn a filehandle into a mmapped zip disk archive handle 
+.SH "SYNOPSIS"
+.sp
+.nf
+.B "#include <zzip/mmapped\&.h>"
+.B ""
+.sp
+zzip__new__ ZZIP_DISK *
+\fIzzip_disk_mmap\fR(int fd)
+
+int
+\fIzzip_disk_init\fR(ZZIP_DISK * disk, void *buffer, zzip_size_t buflen)
+
+zzip__new__ ZZIP_DISK *
+\fIzzip_disk_new\fR(void)
+
+int
+\fIzzip_disk_munmap\fR(ZZIP_DISK * disk)
+
+zzip__new__ ZZIP_DISK *
+\fIzzip_disk_open\fR(char *filename)
+
+zzip__new__ ZZIP_DISK *
+\fIzzip_disk_buffer\fR(void *buffer, size_t buflen) 
+int
+\fIzzip_disk_close\fR(ZZIP_DISK * disk)
+
+
+.fi
+.sp
+.SH "DESCRIPTION"
+ The \fIzzip_disk_mmap\fP function uses the given file-descriptor to detect the length of the file and calls the system \fImmap(2)\fP to put it in main memory. If it is successful then a newly allocated ZZIP_DISK* is returned with disk->buffer pointing to the mapview of the zipdisk content. 
+.sp
+ The \fIzzip_disk_mmap\fP function may return null on errors (errno).  
+.sp
+ The \fIzzip_disk_init\fP function does primary initialization of a disk-buffer struct. 
+.sp
+ The \fIzzip_disk_init\fP function always returns 0 as success.  
+.sp
+ The \fIzzip_disk_new\fP function allocates a new disk-buffer with \fImalloc(3)\fP 
+.sp
+ The \fIzzip_disk_new\fP function may return null on errors (errno).  
+.sp
+ The \fIzzip_disk_munmap\fP function is the inverse of \fIzzip_disk_mmap\fP and using the system munmap(2) on the buffer area and \fIfree(3)\fP on the ZZIP_DISK structure.  
+.sp
+ The \fIzzip_disk_open\fP function opens the given archive by name and turn the filehandle to \fIzzip_disk_mmap\fP for bringing it to main memory. If it can not be \fImmap(2)\fP'ed then we slurp the whole file into a newly \fImalloc(2)\fP'ed memory block. Only if that fails too then we return null. Since handling of disk->buffer is ambiguous it should not be snatched away please. 
+.sp
+ The \fIzzip_disk_open\fP function may return null on errors (errno).  
+.sp
+ The \fIzzip_disk_buffer\fP function will attach a buffer with a zip image that was acquired from another source than a file. Note that if zzip_disk_mmap fails then zzip_disk_open will fall back and try to read the full file to memory wrapping a ZZIP_DISK around the memory buffer just as the \fIzzip_disk_buffer\fP function will do. Note that the \fIzzip_disk_buffer\fP function will not own the buffer, it will neither be written nor free()d. 
+.sp
+ The \fIzzip_disk_buffer\fP function may return null (errno).  
+.sp
+ The \fIzzip_disk_close\fP function will release all data needed to access a (mmapped) zip archive, including any malloc()ed blocks, sharedmem mappings and it dumps the handle struct as well. 
+.sp
+ The \fIzzip_disk_close\fP function returns 0 on success (or whatever \fImunmap\fP says).  
+.sp
+.sp
+.SH "AUTHOR"
+ Guido Draheim <guidod@gmx.de> 
+.sp
+.sp
+.SH "COPYRIGHT"
+ Copyright (c)Guido Draheim, use under copyleft (LGPL,MPL)  
+.sp
+.sp

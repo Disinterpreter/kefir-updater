@@ -20,13 +20,9 @@ namespace i18n = brls::i18n;
 using namespace i18n::literals;
 using json = nlohmann::json;
 
-namespace {
-    constexpr const char AppVersion[] = APP_VERSION;
-}
-
 ToolsTab::ToolsTab(std::string tag, bool erista) : brls::List()
 {
-    if(!tag.empty() && tag != AppVersion){
+    if(!tag.empty() && tag != APP_VERSION){
         updateApp = new brls::ListItem("menus/tools/update_app"_i18n + tag +")");
         std::string text("menus/tools/dl_app"_i18n + std::string(APP_URL));
         updateApp->getClickEvent()->subscribe([&, text, tag](brls::View* view) {
@@ -57,147 +53,89 @@ ToolsTab::ToolsTab(std::string tag, bool erista) : brls::List()
     cheats->setHeight(LISTITEM_HEIGHT);
     this->addView(cheats);
 
-    JCcolor = new brls::ListItem("menus/tools/joy_cons"_i18n);
-    JCcolor->getClickEvent()->subscribe([&](brls::View* view){
-        brls::Application::pushView(new JCPage());
-    });
-    JCcolor->setHeight(LISTITEM_HEIGHT);
-    this->addView(JCcolor);
+    // ntcp = new brls::ListItem("menus/ntcp"_i18n);
+    // ntcp->getClickEvent()->subscribe([&](brls::View* view){
+    //     std::string res = syncTime();
+    //     brls::Dialog* dialog = new brls::Dialog(res);
+    //     brls::GenericEvent::Callback callback = [dialog](brls::View* view) {
+    //         dialog->close();
+    //     };
+    //     dialog->addButton("menus/common/ok"_i18n, callback);
+    //     dialog->setCancelable(true);
+    //     dialog->open();
 
-    PCcolor = new brls::ListItem("menus/tools/pro_cons"_i18n);
-    PCcolor->getClickEvent()->subscribe([&](brls::View* view){
-        brls::Application::pushView(new PCPage());
-    });
-    PCcolor->setHeight(LISTITEM_HEIGHT);
-    this->addView(PCcolor);
+    // });
+    // ntcp->setHeight(LISTITEM_HEIGHT);
+    // this->addView(ntcp); 
 
-    downloadPayload = new brls::ListItem("menus/tools/dl_payloads"_i18n + std::string(BOOTLOADER_PL_PATH));
-    downloadPayload->getClickEvent()->subscribe([&](brls::View* view){
-        brls::Application::pushView(new DownloadPayloadPage());
-    });
-    downloadPayload->setHeight(LISTITEM_HEIGHT);
-    this->addView(downloadPayload);
-
-    if(erista) {
-        rebootPayload = new brls::ListItem("menus/tools/inject_payloads"_i18n);
-        rebootPayload->getClickEvent()->subscribe([&](brls::View* view){
-            brls::Application::pushView(new PayloadPage());
-        });
-        rebootPayload->setHeight(LISTITEM_HEIGHT);
-        this->addView(rebootPayload);
-    }
-
-    /* ntcp = new brls::ListItem("menus/ntcp"_i18n);
-    ntcp->getClickEvent()->subscribe([&](brls::View* view){
-        std::string res = syncTime();
-        brls::Dialog* dialog = new brls::Dialog(res);
-        brls::GenericEvent::Callback callback = [dialog](brls::View* view) {
-            dialog->close();
-        };
-        dialog->addButton("menus/common/ok"_i18n, callback);
-        dialog->setCancelable(true);
-        dialog->open();
-
-    });
-    ntcp->setHeight(LISTITEM_HEIGHT);
-    this->addView(ntcp); */
-
-    netSettings = new brls::ListItem("menus/tools/internet_settings"_i18n);
-    netSettings->getClickEvent()->subscribe([&](brls::View* view){
-        brls::PopupFrame::open("menus/tools/internet_settings"_i18n, new NetPage(), "", "");
-    });
-    netSettings->setHeight(LISTITEM_HEIGHT);
-    this->addView(netSettings);
-
-    browser = new brls::ListItem("menus/tools/browser"_i18n);
-    browser->getClickEvent()->subscribe([&](brls::View* view){
-        char url[0xc00] = {0};
-        SwkbdConfig kbd;
-        Result rc = swkbdCreate(&kbd, 0);
-        if (R_SUCCEEDED(rc)) {
-            swkbdConfigMakePresetDefault(&kbd);
-            swkbdConfigSetGuideText(&kbd, "www.cheatslips.com e-mail");
-            swkbdConfigSetInitialText(&kbd, "https://duckduckgo.com");
-            swkbdShow(&kbd, url, sizeof(url));
-            swkbdClose(&kbd);
-        }
-        else {
-            strcpy(url, "https://duckduckgo.com");
-        }
-        int at = appletGetAppletType();
-        std::string error = "";
-        if(at == AppletType_Application) { // Running as a title
-            WebCommonConfig conf;
-            WebCommonReply out;
-            rc = webPageCreate(&conf, url);
-            if (R_FAILED(rc))
-                error += "\uE016 Error starting Browser\n\uE016 Lookup error code for more info " + rc;
-            webConfigSetJsExtension(&conf, true);
-            webConfigSetPageCache(&conf, true);
-            webConfigSetBootLoadingIcon(&conf, true);
-            webConfigSetWhitelist(&conf, ".*");
-            rc = webConfigShow(&conf, &out);
-            if (R_FAILED(rc))
-                error += "\uE016 Error starting Browser\n\uE016 Lookup error code for more info " + rc;
-        } else { // Running under applet
-            error += "\uE016 Running in applet mode/through a forwarder.\n\uE016 Please launch hbmenu by holding [R] on a game";
-        }
-        if(!error.empty()){
-            brls::Dialog* dialog = new brls::Dialog(error);
-            brls::GenericEvent::Callback callback = [dialog](brls::View* view) {
-                dialog->close();
-            };
-            dialog->addButton("menus/common/ok"_i18n, callback);
-            dialog->setCancelable(true);
-            dialog->open();
-        }
+    // browser = new brls::ListItem("menus/tools/browser"_i18n);
+    // browser->getClickEvent()->subscribe([&](brls::View* view){
+    //     char url[0xc00] = {0};
+    //     SwkbdConfig kbd;
+    //     Result rc = swkbdCreate(&kbd, 0);
+    //     if (R_SUCCEEDED(rc)) {
+    //         swkbdConfigMakePresetDefault(&kbd);
+    //         swkbdConfigSetGuideText(&kbd, "www.cheatslips.com e-mail");
+    //         swkbdConfigSetInitialText(&kbd, "https://google.com");
+    //         swkbdShow(&kbd, url, sizeof(url));
+    //         swkbdClose(&kbd);
+    //     }
+    //     else {
+    //         strcpy(url, "https://google.com");
+    //     }
+    //     int at = appletGetAppletType();
+    //     std::string error = "";
+    //     if(at == AppletType_Application) { // Running as a title
+    //         WebCommonConfig conf;
+    //         WebCommonReply out;
+    //         rc = webPageCreate(&conf, url);
+    //         if (R_FAILED(rc))
+    //             error += "\uE016 Error starting Browser\n\uE016 Lookup error code for more info " + rc;
+    //         webConfigSetJsExtension(&conf, true);
+    //         webConfigSetPageCache(&conf, true);
+    //         webConfigSetBootLoadingIcon(&conf, true);
+    //         webConfigSetWhitelist(&conf, ".*");
+    //         rc = webConfigShow(&conf, &out);
+    //         if (R_FAILED(rc))
+    //             error += "\uE016 Error starting Browser\n\uE016 Lookup error code for more info " + rc;
+    //     } else { // Running under applet
+    //         error += "\uE016 Running in applet mode/through a forwarder.\n\uE016 Please launch hbmenu by holding [R] on a game";
+    //     }
+    //     if(!error.empty()){
+    //         brls::Dialog* dialog = new brls::Dialog(error);
+    //         brls::GenericEvent::Callback callback = [dialog](brls::View* view) {
+    //             dialog->close();
+    //         };
+    //         dialog->addButton("menus/common/ok"_i18n, callback);
+    //         dialog->setCancelable(true);
+    //         dialog->open();
+    //     }
         
-    });
-    browser->setHeight(LISTITEM_HEIGHT);
-    this->addView(browser);
+    // });
+    // browser->setHeight(LISTITEM_HEIGHT);
+    // this->addView(browser);
 
-    move = new brls::ListItem("menus/tools/batch_copy"_i18n);
-    move->getClickEvent()->subscribe([&](brls::View* view){
-        chdir("/");
-        std::string error = "";
-        if(std::filesystem::exists(COPY_FILES_TXT)){
-            error = fs::copyFiles(COPY_FILES_TXT);
-        }
-        else{
-            error = "menus/tools/batch_copy_config_not_found"_i18n;
-        }
-        brls::Dialog* dialog = new brls::Dialog(error);
-        brls::GenericEvent::Callback callback = [dialog](brls::View* view) {
-            dialog->close();
-        };
-        dialog->addButton("menus/common/ok"_i18n, callback);
-        dialog->setCancelable(true);
-        dialog->open();
-    });
-    move->setHeight(LISTITEM_HEIGHT);
-    this->addView(move);
-
-    cleanUp = new brls::ListItem("menus/tools/clean_up"_i18n);
-    cleanUp->getClickEvent()->subscribe([&](brls::View* view){
-        std::filesystem::remove(AMS_ZIP_PATH);
-        std::filesystem::remove(APP_ZIP_PATH);
-        std::filesystem::remove(CFW_ZIP_PATH);
-        std::filesystem::remove(FW_ZIP_PATH);
-        std::filesystem::remove(CHEATS_ZIP_PATH);
-        std::filesystem::remove(SIGPATCHES_ZIP_PATH);
-        fs::removeDir(AMS_DIRECTORY_PATH);
-        fs::removeDir(SEPT_DIRECTORY_PATH);
-        fs::removeDir(FW_DIRECTORY_PATH);
-        brls::Dialog* dialog = new brls::Dialog("menus/common/all_done"_i18n);
-        brls::GenericEvent::Callback callback = [dialog](brls::View* view) {
-            dialog->close();
-        };
-        dialog->addButton("menus/common/ok"_i18n, callback);
-        dialog->setCancelable(true);
-        dialog->open();
-    });
-    cleanUp->setHeight(LISTITEM_HEIGHT);
-    this->addView(cleanUp);
+    // cleanUp = new brls::ListItem("menus/tools/clean_up"_i18n);
+    // cleanUp->getClickEvent()->subscribe([&](brls::View* view){
+    //     std::filesystem::remove(AMS_ZIP_PATH);
+    //     std::filesystem::remove(APP_ZIP_PATH);
+    //     std::filesystem::remove(CFW_ZIP_PATH);
+    //     std::filesystem::remove(FW_ZIP_PATH);
+    //     std::filesystem::remove(CHEATS_ZIP_PATH);
+    //     std::filesystem::remove(SIGPATCHES_ZIP_PATH);
+    //     fs::removeDir(AMS_DIRECTORY_PATH);
+    //     fs::removeDir(SEPT_DIRECTORY_PATH);
+    //     fs::removeDir(FW_DIRECTORY_PATH);
+    //     brls::Dialog* dialog = new brls::Dialog("menus/common/all_done"_i18n);
+    //     brls::GenericEvent::Callback callback = [dialog](brls::View* view) {
+    //         dialog->close();
+    //     };
+    //     dialog->addButton("menus/common/ok"_i18n, callback);
+    //     dialog->setCancelable(true);
+    //     dialog->open();
+    // });
+    // cleanUp->setHeight(LISTITEM_HEIGHT);
+    // this->addView(cleanUp);
 
     language = new brls::ListItem("menus/tools/language"_i18n);
     language->getClickEvent()->subscribe([&](brls::View* view){
@@ -244,19 +182,12 @@ ToolsTab::ToolsTab(std::string tag, bool erista) : brls::List()
     language->setHeight(LISTITEM_HEIGHT);
     this->addView(language);
 
-    hideTabs = new brls::ListItem("menus/tools/hide_tabs"_i18n);
-    hideTabs->getClickEvent()->subscribe([&](brls::View* view) {
-        brls::PopupFrame::open("menus/tools/hide_tabs"_i18n, new HideTabsPage(), "", "");
-    });
-    hideTabs->setHeight(LISTITEM_HEIGHT);
-    this->addView(hideTabs);
-
-    changelog = new brls::ListItem("menus/tools/changelog"_i18n);
-    changelog->getClickEvent()->subscribe([&](brls::View* view){
-        brls::PopupFrame::open("menus/tools/changelog"_i18n, new ChangelogPage(), "", "");
-    });
-    changelog->setHeight(LISTITEM_HEIGHT);
-    this->addView(changelog);
+    // changelog = new brls::ListItem("menus/tools/changelog"_i18n);
+    // changelog->getClickEvent()->subscribe([&](brls::View* view){
+    //     brls::PopupFrame::open("menus/tools/changelog"_i18n, new ChangelogPage(), "", "");
+    // });
+    // changelog->setHeight(LISTITEM_HEIGHT);
+    // this->addView(changelog);
 
 /*     language = new brls::ListItem("menus/Language_Option"_i18n);
     language->getClickEvent()->subscribe([&](brls::View* view){

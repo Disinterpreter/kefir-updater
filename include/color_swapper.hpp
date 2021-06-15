@@ -5,22 +5,22 @@
 namespace JC {
 
     int setColor(std::vector<int> colors);
-    int backupToJSON(nlohmann::json &profiles, const std::string& path);
-    std::vector<std::pair<std::string, std::vector<int>>> getProfiles(const std::string& path);
+    int backupToJSON(nlohmann::json &profiles, const char* path);
+    std::vector<std::pair<std::string, std::vector<int>>> getProfiles(const char* path);
     void changeJCColor(std::vector<int> values);
     nlohmann::json backupProfile();
-    void backupJCColor(const std::string& path);
+    void backupJCColor(const char* path);
 
 }
 
 namespace PC {
 
     int setColor(std::vector<int> colors);
-    int backupToJSON(nlohmann::json &profiles,const std::string& path);
-    std::vector<std::pair<std::string, std::vector<int>>> getProfiles(const std::string& path);
+    int backupToJSON(nlohmann::json &profiles, const char* path);
+    std::vector<std::pair<std::string, std::vector<int>>> getProfiles(const char* path);
     void changePCColor(std::vector<int> values);
     nlohmann::json backupProfile();
-    void backupPCColor(const std::string& path);
+    void backupPCColor(const char* path);
 
 }
 

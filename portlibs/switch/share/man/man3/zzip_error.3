@@ -1,0 +1,35 @@
+.TH "zzip_error" "3" "0\&.13\&.69" "zziplib" "zziplib Function List"
+.ie \n(.g .ds Aq \(aq
+.el        .ds Aq 
+.nh
+.ad l
+.SH "NAME"
+zzip_error, zzip_seterror \-  get errror status\&. 
+.SH "SYNOPSIS"
+.sp
+.nf
+.B "#include <zzip/lib\&.h>"
+.B ""
+.sp
+int
+\fIzzip_error\fR(ZZIP_DIR * dir)
+
+void
+\fIzzip_seterror\fR(ZZIP_DIR * dir, int errcode) 
+
+.fi
+.sp
+.SH "DESCRIPTION"
+ The \fIzzip_error\fP function just returns dir->errcode of the ZZIP_DIR handle see: \fIzzip_dir_open\fP, \fIzzip_dir_open\fP, \fIzzip_readdir\fP, \fIzzip_dir_read\fP  
+.sp
+ The \fIzzip_seterror\fP function just does dir->errcode = errcode  
+.sp
+.sp
+.SH "AUTHOR"
+ Guido Draheim <guidod@gmx.de> 
+.sp
+.sp
+.SH "COPYRIGHT"
+ Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)  
+.sp
+.sp

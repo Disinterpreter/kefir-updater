@@ -1,0 +1,13 @@
+prefix=/opt/devkitpro/portlibs/switch
+exec_prefix=/opt/devkitpro/portlibs/switch
+libdir=/opt/devkitpro/portlibs/switch/lib
+includedir=/opt/devkitpro/portlibs/switch/include
+datarootdir=/opt/devkitpro/portlibs/switch/share
+datadir=/opt/devkitpro/portlibs/switch/share
+
+Name: oniguruma
+Description: Regular expression library
+Version: 6.9.2
+Requires:
+Libs: -L${libdir} -lonig
+Cflags: -I${includedir}

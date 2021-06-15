@@ -11,15 +11,15 @@
 namespace i18n = brls::i18n;
 using namespace i18n::literals;
 
-AmsTab::AmsTab(const bool erista) :
+AmsTab::AmsTab() :
     brls::List()
 {
     std::vector<std::pair<std::string, std::string>> links;
     std::string operation("menus/main/getting"_i18n);
-    this->description = new brls::Label(brls::LabelStyle::DESCRIPTION, "menus/main/ams_text"_i18n + (CurrentCfw::running_cfw == CFW::ams ? "\n" + "menus/ams_update/current_ams"_i18n + CurrentCfw::getAmsInfo() : "") + (erista ? "\n" + "menus/ams_update/erista_rev"_i18n : "\n" + "menus/ams_update/mariko_rev"_i18n), true);
+    this->description = new brls::Label(brls::LabelStyle::MEDIUM, (CurrentCfw::running_cfw == CFW::ams ? "\n" + "menus/ams_update/current_ams"_i18n + CurrentCfw::getAmsInfo() : ""), true);
     this->addView(description);
     operation += "menus/main/ams"_i18n;
-    links = download::getLinks(AMS_URL);
+    links = download::getLinks(CFW_URL);
 
     this->size = links.size();
     if(this->size){
@@ -32,31 +32,20 @@ AmsTab::AmsTab(const bool erista) :
             std::string text("menus/common/download"_i18n + link.first + "menus/common/from"_i18n + url);
             listItem = new brls::ListItem(link.first);
             listItem->setHeight(LISTITEM_HEIGHT);
-            listItem->getClickEvent()->subscribe([&, text, text_hekate, url, hekate_url, operation, erista](brls::View* view) {
+            listItem->getClickEvent()->subscribe([&, text, text_hekate, url, hekate_url, operation](brls::View* view) {
                 brls::StagedAppletFrame* stagedFrame = new brls::StagedAppletFrame();
                 stagedFrame->setTitle(operation);
                 stagedFrame->addStage(
                     new ConfirmPage(stagedFrame, text)
                 );
                 stagedFrame->addStage(
-                    new WorkerPage(stagedFrame, "menus/common/downloading"_i18n, [url](){util::downloadArchive(url, archiveType::ams_cfw);})
+                    new WorkerPage(stagedFrame, "menus/common/downloading"_i18n, [url](){util::downloadArchive(url, archiveType::cfw);})
                 );
                 stagedFrame->addStage(
-                    new WorkerPage(stagedFrame, "menus/common/extracting"_i18n, [](){util::extractArchive(archiveType::ams_cfw);})
+                    new WorkerPage(stagedFrame, "menus/common/extracting"_i18n, [](){util::extractArchive(archiveType::cfw);})
                 );
-                if(url.find("DeepSea") == std::string::npos) {
-                    stagedFrame->addStage(
-                        new DialoguePage(stagedFrame, text_hekate, erista)
-                    );
-                    stagedFrame->addStage(
-                        new WorkerPage(stagedFrame, "menus/common/downloading"_i18n, [hekate_url](){util::downloadArchive(hekate_url, archiveType::cfw);})
-                    );
-                    stagedFrame->addStage(
-                        new WorkerPage(stagedFrame, "menus/common/extracting"_i18n, [](){util::extractArchive(archiveType::cfw);})
-                    );
-                }
                 stagedFrame->addStage(
-                    new ConfirmPage(stagedFrame, "menus/ams_update/reboot_rcm"_i18n, false, true, erista)
+                    new ConfirmPage(stagedFrame, "menus/ams_update/reboot_rcm"_i18n, false, true)
                 );
                 brls::Application::pushView(stagedFrame);
             });

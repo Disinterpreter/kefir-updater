@@ -1,0 +1,84 @@
+.TH "zzip_fopen" "3" "0\&.13\&.69" "zziplib" "zziplib Function List"
+.ie \n(.g .ds Aq \(aq
+.el        .ds Aq 
+.nh
+.ad l
+.SH "NAME"
+zzip_fopen, zzip_freopen \-  start usage\&.                                             
+.SH "SYNOPSIS"
+.sp
+.nf
+.B "#include <zzip/lib\&.h>"
+.B ""
+.sp
+ZZIP_FILE *
+\fIzzip_fopen\fR(zzip_char_t * filename, zzip_char_t * mode)
+
+ZZIP_FILE *
+\fIzzip_freopen\fR(zzip_char_t * filename, zzip_char_t * mode, ZZIP_FILE * stream)
+
+
+.fi
+.sp
+.SH "DESCRIPTION"
+ The \fIzzip_fopen\fP function will \fIfopen(3)\fP a real/zipped file. 
+.sp
+ It has some magic functionality builtin - it will first try to open the given <emphasis>filename</emphasis> as a normal file. If it does not exist, the given path to the filename (if any) is split into its directory-part and the file-part. A ".zip" extension is then added to the directory-part to create the name of a zip-archive. That zip-archive (if it exists) is being searched for the file-part, and if found a zzip-handle is returned. 
+.sp
+ Note that if the file is found in the normal fs-directory the returned structure is mostly empty and the \fIzzip_read\fP call will use the libc \fIread(2)\fP to obtain data. Otherwise a \fIzzip_file_open\fP is performed and any error mapped to \fIerrno(3)\fP. 
+.sp
+ unlike the posix-wrapper \fIzzip_open\fP the mode-argument is a string which allows for more freedom to support the extra zzip modes called ZZIP_CASEINSENSITIVE and ZZIP_IGNOREPATH. Currently, this \fIzzip_fopen\fP call will convert the following characters in the mode-string into their corrsponding mode-bits: 
+.sp
+ \fI "r" : O_RDONLY : \fP read-only  
+.sp
+ \fI "b" : O_BINARY : \fP binary (win32 specific)  
+.sp
+ \fI "f" : O_NOCTTY : \fP no char device (unix)  
+.sp
+ \fI "i" : ZZIP_CASELESS : \fP inside zip file  
+.sp
+ \fI "*" : ZZIP_NOPATHS : \fP inside zip file only  
+.sp
+ all other modes will be ignored for zip-contained entries but they are transferred for compatibility and portability, including these extra sugar bits: 
+.sp
+ \fI "x" : O_EXCL :\fP fail if file did exist  
+.sp
+ \fI "s" : O_SYNC :\fP synchronized access  
+.sp
+ \fI "n" : O_NONBLOCK :\fP nonblocking access  
+.sp
+ \fI "z#" : compression level :\fP for zlib  
+.sp
+ \fI "g#" : group access :\fP unix access bits  
+.sp
+ \fI "u#" : owner access :\fP unix access bits  
+.sp
+ \fI "o#" : world access :\fP unix access bits  
+.sp
+ ... the access bits are in traditional unix bit format with 7 = read/write/execute, 6 = read/write, 4 = read-only. 
+.sp
+ The default access mode is 0664, and the compression level is ignored since the lib can not yet write zip files, otherwise it would be the initialisation value for the zlib deflateInit where 0 = no-compression, 1 = best-speed, 9 = best-compression. 
+.sp
+ The \fIzzip_fopen\fP function returns a new zzip-handle (use \fIzzip_close\fP to return it). On error the \fIzzip_fopen\fP function will return null setting \fIerrno(3)\fP.  
+.sp
+ The \fIzzip_freopen\fP function receives an additional argument pointing to a ZZIP_FILE* being already in use. If this extra argument is null then the \fIzzip_freopen\fP function is identical with calling \fIzzip_fopen\fP 
+.sp
+ Per default, the old file stream is closed and only the internal structures associated with it are kept. These internal structures may be reused for the return value, and this is a lot quicker when the filename matches a zipped file that is incidentally in the very same zip arch as the old filename wrapped in the stream struct. 
+.sp
+ That's simply because the zip arch's central directory does not need to be read again. As an extension for the \fIzzip_freopen\fP function, if the mode-string contains a "q" then the old stream is not closed but left untouched, instead it is only given as a hint that a new file handle may share/copy the zip arch structures of the old file handle if that is possible, i.e when they are in the same zip arch. 
+.sp
+ The \fIzzip_freopen\fP function returns a new zzip-handle (use \fIzzip_close\fP to return it). On error the \fIzzip_freopen\fP function will return null setting \fIerrno(3)\fP.  
+.sp
+.sp
+.SH "AUTHOR"
+ Guido Draheim <guidod@gmx.de> Tomi Ollila <Tomi.Ollila@iki.fi> 
+.sp
+.sp
+.SH "COPYRIGHT"
+ Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)  
+.sp
+.sp
+.SH "SEE ALSO"
+ fopen(2) 
+.sp
+.sp

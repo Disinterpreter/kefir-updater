@@ -1,23 +1,21 @@
 #include "utils.hpp"
 #include "fs.hpp"
 #include "current_cfw.hpp"
+#include <switch.h>
 #include "download.hpp"
 #include "extract.hpp"
 #include "progress_event.hpp"
 #include "main_frame.hpp"
-#include "reboot_payload.h"
-#include "unistd.h"
-#include <switch.h>
 #include <filesystem>
 #include <fstream>
-
+#include "reboot_payload.h"
 
 namespace i18n = brls::i18n;
 using namespace i18n::literals;
 
 namespace util {
 
-bool isArchive(const std::string&  path){
+bool isArchive(const char * path){
     std::fstream file;
     std::string fileContent;
     if(std::filesystem::exists(path)){
@@ -33,30 +31,31 @@ void downloadArchive(std::string url, archiveType type){
     AppletType at;
     switch(type){
         case archiveType::sigpatches:
-            download::downloadFile(url, SIGPATCHES_FILENAME, OFF);
+            download::downloadFile(url.c_str(), SIGPATCHES_FILENAME, OFF);
             break;
         case archiveType::cheats:
-            download::downloadFile(url, CHEATS_FILENAME, OFF);
+            download::downloadFile(url.c_str(), CHEATS_FILENAME, OFF);
             break;
         case archiveType::fw:
             at = appletGetAppletType();
             if (at == AppletType_Application || at == AppletType_SystemApplication) {
-                download::downloadFile(url, FIRMWARE_FILENAME, OFF);
+                download::downloadFile(url.c_str(), FIRMWARE_FILENAME, OFF);
             }
             else{
                 brls::Application::crash("menus/utils/fw_warning"_i18n);
             }
             break;
         case archiveType::app:
-            download::downloadFile(url, APP_FILENAME, OFF);
+            download::downloadFile(url.c_str(), APP_FILENAME, OFF);
             break;
         case archiveType::cfw:
-            download::downloadFile(url, CFW_FILENAME, OFF);
+            download::downloadFile(url.c_str(), CFW_FILENAME, OFF);
             break;
         case archiveType::ams_cfw:
-            download::downloadFile(url, AMS_FILENAME, OFF);
+            download::downloadFile(url.c_str(), AMS_FILENAME, OFF);
     }
 }
+
 
 int showDialogBox(std::string text, std::string opt){
     int dialogResult = -1;
@@ -150,8 +149,15 @@ void extractArchive(archiveType type, std::string tag){
             break;
         case archiveType::cfw:
             if(isArchive(CFW_FILENAME)){
-                overwriteInis = showDialogBox("menus/utils/overwrite_inis"_i18n, "menus/common/no"_i18n, "menus/common/yes"_i18n);
-                extract::extract(CFW_FILENAME, ROOT_PATH, overwriteInis);
+                if(std::filesystem::exists(KEFIR_DIRECTORY_PATH))
+                    std::filesystem::remove_all(KEFIR_DIRECTORY_PATH);
+                std::filesystem::create_directory(KEFIR_DIRECTORY_PATH);
+                overwriteInis = 1;
+                extract::extract(CFW_FILENAME, KEFIR_DIRECTORY_PATH, overwriteInis);
+
+                if(std::filesystem::exists("/kefir/switch/kefirupdater/kefir-updater.bin")) {
+                    fs::copyFile("/kefir/switch/kefirupdater/kefir-updater.bin", "/payload.bin");
+                } 
             }
             else{
                 brls::Application::crash("menus/utils/wrong_type_cfw"_i18n);
@@ -168,8 +174,8 @@ void extractArchive(archiveType type, std::string tag){
             }
             break;
     }
-    if(type == archiveType::ams_cfw || type == archiveType::cfw)
-        fs::copyFiles(COPY_FILES_TXT);
+    if(std::filesystem::exists(COPY_FILES_JSON))
+        fs::copyFiles(COPY_FILES_JSON);
 }
 
 std::string formatListItemTitle(const std::string &str, size_t maxScore) {
@@ -210,19 +216,13 @@ std::vector<std::string> fetchPayloads(){
 }
 
 void shutDown(bool reboot){
-    //sync();
     bpcInitialize();
     if(reboot) bpcRebootSystem();
     else bpcShutdownSystem();
     bpcExit();
 }
 
-void rebootToPayload(const std::string& path) {
-    //sync();
-    reboot_to_payload(path.c_str());
-}
-
-std::string getLatestTag(const std::string& url){
+std::string getLatestTag(const char *url){
     nlohmann::json tag = download::getRequest(url, {"accept: application/vnd.github.v3+json"});
     if(tag.find("tag_name") != tag.end())
         return tag["tag_name"];
@@ -230,12 +230,14 @@ std::string getLatestTag(const std::string& url){
         return "";
 }
 
-void saveVersion(std::string version, const std::string& path){
-    std::ofstream newVersion(path);
+void saveVersion(std::string version, const char* path){
+    std::fstream newVersion;
+    newVersion.open(path, std::fstream::out | std::fstream::trunc);
     newVersion << version << std::endl;
+    newVersion.close();
 }
 
-std::string readVersion(const std::string& path){
+std::string readVersion(const char* path){
     std::fstream versionFile;
     std::string version = "0";
     if(std::filesystem::exists(path)){
@@ -268,7 +270,7 @@ bool isErista() {
     }
 };
 
-void removeSysmodulesFlags(const std::string&  directory) {
+void removeSysmodulesFlags(const char * directory) {
     for (const auto & e : std::filesystem::recursive_directory_iterator(directory)) {
         if(e.path().string().find("boot2.flag") != std::string::npos) {
                 std::filesystem::remove(e.path());

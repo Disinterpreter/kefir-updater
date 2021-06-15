@@ -1,0 +1,51 @@
+.TH "zzip_rewinddir" "3" "0\&.13\&.69" "zziplib" "zziplib Function List"
+.ie \n(.g .ds Aq \(aq
+.el        .ds Aq 
+.nh
+.ad l
+.SH "NAME"
+zzip_rewinddir, zzip_telldir, zzip_seekdir, zzip_telldir32, zzip_seekdir32 \-  rewind\&. 
+.SH "SYNOPSIS"
+.sp
+.nf
+.B "#include <zzip/lib\&.h>"
+.B ""
+.sp
+void
+\fIzzip_rewinddir\fR(ZZIP_DIR * dir)
+
+zzip_off_t
+\fIzzip_telldir\fR(ZZIP_DIR * dir)
+
+void
+\fIzzip_seekdir\fR(ZZIP_DIR * dir, zzip_off_t offset)
+
+long
+\fIzzip_telldir32\fR(ZZIP_DIR * dir)
+
+void
+\fIzzip_seekdir32\fR(ZZIP_DIR * dir, long offset)
+
+
+.fi
+.sp
+.SH "DESCRIPTION"
+ The \fIzzip_rewinddir\fP function is the equivalent of a \fIrewinddir(2)\fP for a realdir or the zipfile in place of a directory. The ZZIP_DIR handle returned from \fIzzip_opendir\fP has a flag saying realdir or zipfile. As for a zipfile, the filenames will include the filesubpath, so take care.  
+.sp
+ The \fIzzip_telldir\fP function is the equivalent of \fItelldir(2)\fP for a realdir or zipfile.  
+.sp
+ The \fIzzip_seekdir\fP function is the equivalent of \fIseekdir(2)\fP for a realdir or zipfile.  
+.sp
+ The \fIzzip_telldir32\fP function is provided for users who can not use any largefile-mode.  
+.sp
+ The \fIzzip_seekdir32\fP function is provided for users who can not use any largefile-mode.  
+.sp
+.sp
+.SH "AUTHOR"
+ Guido Draheim <guidod@gmx.de> 
+.sp
+.sp
+.SH "COPYRIGHT"
+ Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)  
+.sp
+.sp

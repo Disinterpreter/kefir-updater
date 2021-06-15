@@ -1,0 +1,14 @@
+prefix=/opt/devkitpro/portlibs/switch
+exec_prefix=${prefix}
+libdir=/opt/devkitpro/portlibs/switch/lib
+includedir=/opt/devkitpro/portlibs/switch/include
+
+Name: libavutil
+Description: FFmpeg utility library
+Version: 56.31.100
+Requires: 
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lavutil -pthread -lm
+Libs.private: 
+Cflags: -I${includedir}

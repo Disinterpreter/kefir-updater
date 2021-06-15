@@ -1,15 +1,35 @@
 #include "confirm_page.hpp"
 #include "utils.hpp"
 #include "main_frame.hpp"
-#include "fs.hpp"
+#include "reboot_payload.h"
 #include "utils.hpp"
 #include <algorithm>
-#include <filesystem>
-#include <string>
 
+bool isErista() {
+    u64 hwType;
+    Result rc = splGetConfig(SplConfigItem_HardwareType, &hwType);
+
+    if(R_FAILED(rc))
+        return true;
+
+    switch (hwType)
+    {
+        case 0:
+        case 1:
+            return true;
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+            return false;
+        default:
+            return true;
+    }
+};
+ 
 namespace i18n = brls::i18n;
 using namespace i18n::literals;
-ConfirmPage::ConfirmPage(brls::StagedAppletFrame* frame, std::string text, bool done, bool reboot, bool erista): done(done), reboot(reboot), erista(erista)
+ConfirmPage::ConfirmPage(brls::StagedAppletFrame* frame, std::string text, bool done, bool reboot): done(done), reboot(reboot)
 {
     this->button = (new brls::Button(brls::ButtonStyle::REGULAR))->setLabel(done ? "menus/common/back"_i18n : "menus/common/continue"_i18n);
     this->button->setParent(this);
@@ -20,19 +40,12 @@ ConfirmPage::ConfirmPage(brls::StagedAppletFrame* frame, std::string text, bool 
         else if (this->done) {
             brls::Application::pushView(new MainFrame());
         }
-        else if (this->reboot) {
-            if(this->erista) {
-                util::rebootToPayload(RCM_PAYLOAD_PATH);
-            }
-            else {
-                if(std::filesystem::exists(UPDATE_BIN_PATH)) {
-                    fs::copyFile(UPDATE_BIN_PATH, MARIKO_PAYLOAD_PATH_TEMP);
-                }
-                else {
-                    fs::copyFile(REBOOT_PAYLOAD_PATH, MARIKO_PAYLOAD_PATH_TEMP);
-                }
-                fs::copyFile(RCM_PAYLOAD_PATH, MARIKO_PAYLOAD_PATH);
-                util::shutDown(true);
+        else if (this->reboot){
+            if(isErista()) {
+                reboot_to_payload(RCM_PAYLOAD_PATH);
+            } else {
+                bpcInitialize();
+                bpcRebootSystem();
             }
         }
     });

@@ -49,17 +49,7 @@ CheatsPage::CheatsPage() : AppletFrame(true, true)
         dlAll = new brls::ListItem("menus/cheats/dl_all"_i18n);
         dlAll->getClickEvent()->subscribe([&, cheatsVer](brls::View* view) {
             std::string url;
-            switch(CurrentCfw::running_cfw){
-                case CFW::sxos:
-                    url = CHEATS_URL_TITLES;
-                    break;
-                case CFW::ams:
-                    url = CHEATS_URL_CONTENTS;
-                    break;
-                case CFW::rnx:
-                    url = CHEATS_URL_CONTENTS;
-                    break;
-            }
+            url = CHEATS_URL_CONTENTS;
             std::string text("menus/main/get_cheats"_i18n + cheatsVer + ")" + "menus/common/from"_i18n + url);
             brls::StagedAppletFrame* stagedFrame = new brls::StagedAppletFrame();
             stagedFrame->setTitle("menus/cheats/dl_all"_i18n);

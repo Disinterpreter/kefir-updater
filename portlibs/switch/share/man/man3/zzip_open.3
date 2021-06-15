@@ -1,0 +1,68 @@
+.TH "zzip_open" "3" "0\&.13\&.69" "zziplib" "zziplib Function List"
+.ie \n(.g .ds Aq \(aq
+.el        .ds Aq 
+.nh
+.ad l
+.SH "NAME"
+zzip_open, zzip_open_ext_io, zzip_open_shared_io \-  start usage\&. 
+.SH "SYNOPSIS"
+.sp
+.nf
+.B "#include <zzip/lib\&.h>"
+.B ""
+.sp
+ZZIP_FILE *
+\fIzzip_open\fR(zzip_char_t * filename, int o_flags)
+
+ZZIP_FILE *
+\fIzzip_open_ext_io\fR(zzip_char_t * filename, int o_flags, int o_modes,
+                 zzip_strings_t * ext, zzip_plugin_io_t io)
+
+ZZIP_FILE *
+\fIzzip_open_shared_io\fR(ZZIP_FILE * stream,
+                    zzip_char_t * filename, int o_flags, int o_modes,
+                    zzip_strings_t * ext, zzip_plugin_io_t io)
+
+
+.fi
+.sp
+.SH "DESCRIPTION"
+ The \fIzzip_open\fP function will \fIopen(2)\fP a real/zipped file 
+.sp
+ It has some magic functionality builtin - it will first try to open the given <emphasis>filename</emphasis> as a normal file. If it does not exist, the given path to the filename (if any) is split into its directory-part and the file-part. A ".zip" extension is then added to the directory-part to create the name of a zip-archive. That zip-archive (if it exists) is being searched for the file-part, and if found a zzip-handle is returned. 
+.sp
+ Note that if the file is found in the normal fs-directory the returned structure is mostly empty and the \fIzzip_read\fP call will use the libc \fIread(2)\fP to obtain data. Otherwise a \fIzzip_file_open\fP is performed and any error mapped to \fIerrno(3)\fP. 
+.sp
+ There was a possibility to transfer zziplib-specific openmodes through o_flags but you should please not use them anymore and look into \fIzzip_open_ext_io\fP to submit them down. The \fIzzip_open\fP function is shallow in that it just extracts the zzipflags and calls 
+.sp
+ \fIzzip_open_ext_io(filename, o_flags, zzipflags|0664, 0, 0) \fP  
+.sp
+ you must stop using this extra functionality (not well known anyway) since zzip_open might be later usable to open files for writing in which case the _EXTRAFLAGS will get in conflict. 
+.sp
+ compare with \fIopen(2)\fP and \fIzzip_fopen\fP  
+.sp
+ The \fIzzip_open_ext_io\fP function uses explicit ext and io instead of the internal defaults, setting them to zero is equivalent to \fIzzip_open\fP 
+.sp
+ note that the two flag types have been split into an o_flags (for fcntl-like openflags) and o_modes where the latter shall carry the zzip_flags and possibly accessmodes for unix filesystems. Since this version of zziplib can not write zipfiles, it is not yet used for anything else than zzip-specific modeflags. 
+.sp
+ The \fIzzip_open_ext_io\fP function returns a new zzip-handle (use \fIzzip_close\fP to return it). On error the \fIzzip_open_ext_io\fP function will return null setting \fIerrno(3)\fP. 
+.sp
+ If any ext_io handlers were used then the referenced structure should be static as the allocated ZZIP_FILE does not copy them.  
+.sp
+ The \fIzzip_open_shared_io\fP function takes an extra stream argument - if a handle has been then ext/io can be left null and the new stream handle will pick up the ext/io. This should be used only in specific environment however since \fIzzip_file_real\fP does not store any ext-sequence. 
+.sp
+ The benefit for the \fIzzip_open_shared_io\fP function comes in when the old file handle was openened from a file within a zip archive. When the new file is in the same zip archive then the internal zzip_dir structures will be shared. It is even quicker, as no check needs to be done anymore trying to guess the zip archive place in the filesystem, here we just check whether the zip archive's filepath is a prefix part of the filename to be opened. 
+.sp
+ Note that the \fIzzip_open_shared_io\fP function is also used by \fIzzip_freopen\fP that will unshare the old handle, thereby possibly closing the handle. 
+.sp
+ The \fIzzip_open_shared_io\fP function returns a new zzip-handle (use \fIzzip_close\fP to return it). On error the \fIzzip_open_shared_io\fP function will return null setting \fIerrno(3)\fP.  
+.sp
+.sp
+.SH "AUTHOR"
+ Guido Draheim <guidod@gmx.de> Tomi Ollila <Tomi.Ollila@iki.fi> 
+.sp
+.sp
+.SH "COPYRIGHT"
+ Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)  
+.sp
+.sp

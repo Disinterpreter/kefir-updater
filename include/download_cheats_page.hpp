@@ -6,21 +6,21 @@
 
 class DownloadCheatsPage : public brls::AppletFrame
 {
-    protected:
+    private:
         brls::List* list;
         brls::Label* label;
         brls::ListItem* del;
-        uint64_t tid = 0;
-        std::string bid = "";
-        u32 version = 0;
+        brls::ToggleListItem* listItem;
+        std::vector<std::pair<brls::ToggleListItem*, int>> toggles;
 
+    public:
         DownloadCheatsPage(uint64_t tid);
-        void GetBuildID();
-        void GetBuildIDFromDmnt();
-        void GetVersion();
-        void GetBuildIDFromFile();
-        void WriteCheats(std::string cheatContent);
-        void DeleteCheats();
+        std::string GetBuilID(uint64_t tid);
+        std::string GetBuilIDFromFile(uint64_t tid);
+        std::string GetCheatsTitle(nlohmann::json cheat);
+        void WriteCheats(uint64_t tid, std::string bid, std::string cheatContent);
+        void DeleteCheats(uint64_t tid, std::string bid);
+        void ShowCheatsContent(nlohmann::ordered_json titles);
 
         typedef struct {
             u64 base;
@@ -36,24 +36,4 @@ class DownloadCheatsPage : public brls::AppletFrame
             DmntMemoryRegionExtents address_space_extents;
             u8 main_nso_build_id[0x20];
         } DmntCheatProcessMetadata;
-};
-
-class DownloadCheatsPage_CheatSlips : public DownloadCheatsPage {
-
-    private:
-        brls::ToggleListItem* listItem;
-        std::vector<std::pair<brls::ToggleListItem*, int>> toggles;
-        std::string GetCheatsTitle(nlohmann::json cheat);
-        void ShowCheatsContent(nlohmann::ordered_json titles);
-
-    public:
-        DownloadCheatsPage_CheatSlips(uint64_t tid);
-};
-
-class DownloadCheatsPage_GbaTemp : public DownloadCheatsPage {
-    private:
-        brls::ListItem* listItem;
-
-    public:
-        DownloadCheatsPage_GbaTemp(uint64_t tid);
 };

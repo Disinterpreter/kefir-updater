@@ -15,20 +15,20 @@ include $(DEVKITPRO)/libnx/switch_rules
 # SOURCES is a list of directories containing source code
 # DATA is a list of directories containing data files
 # INCLUDES is a list of directories containing header files
-BUILD		:=	build
+BUILD			:=	build
 SOURCES		:=	source lib/zipper/source
 RESOURCES	:=	resources
-DATA		:=	data
-INCLUDES	:=	include lib/zipper/include /lib/borealis/library/include/borealis/extern/nlohmann
-APP_TITLE	:=	All-in-One Switch Updater
-APP_AUTHOR	:=	HamletDuFromage
-APP_VERSION :=  2.6.0
+DATA			:=	data
+INCLUDES		:=	include lib/zipper/include /lib/borealis/library/include/borealis/extern/nlohmann
+APP_TITLE	:=	Kefir Updater
+APP_AUTHOR	:=	HamletDuFromage, forked by xHR
+APP_VERSION :=  0.0.1
 TARGET		:=	$(notdir $(CURDIR))
 
-ROMFS				:=	resources
-BOREALIS_PATH		:=	lib/borealis
+ROMFS						:=	resources
+BOREALIS_PATH			:=	lib/borealis
 BOREALIS_RESOURCES	:=	romfs:/
-#APP_RESOURCES		:=	romfs:/
+#APP_RESOURCES			:=	romfs:/
 
 #---------------------------------------------------------------------------------
 # version control constants
@@ -81,9 +81,9 @@ export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
 export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 
 CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
-CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
+CPPFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
-BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
+BINFILES		:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
 
 #---------------------------------------------------------------------------------
 # use CXX for linking C++ projects, CC for standard C
@@ -164,25 +164,30 @@ $(ROMFS):
 	@cp -ruf $(CURDIR)/$(ROMFS)/i18n/zh-CN/. $(CURDIR)/$(ROMFS)/i18n/zh-Hans/
 	@cp -ruf $(CURDIR)/$(ROMFS)/i18n/zh-TW/. $(CURDIR)/$(ROMFS)/i18n/zh-Hant/
 	@rm $(CURDIR)/$(ROMFS)/i18n/*/installer.json $(CURDIR)/$(ROMFS)/i18n/*/main.json $(CURDIR)/$(ROMFS)/i18n/*/popup.json $(CURDIR)/$(ROMFS)/i18n/*/custom_layout.json
-	@$(MAKE) -C $(CURDIR)/aiosu-rcm -f $(CURDIR)/aiosu-rcm/Makefile
-	@cp $(CURDIR)/aiosu-rcm/output/aio_rcm.bin $(CURDIR)/$(ROMFS)/aio_rcm.bin
-# @$(MAKE) -C $(CURDIR)/aiosu-forwarder -f $(CURDIR)/aiosu-forwarder/Makefile
-	@cp $(CURDIR)/aiosu-forwarder/aiosu-forwarder.nro $(CURDIR)/$(ROMFS)/aiosu-forwarder.nro
 
 $(BUILD): $(ROMFS)
+	@$(MAKE) -C $(CURDIR)/payload -f $(CURDIR)/payload/Makefile
+	[ -d $(CURDIR)/output ] || mkdir -p $(CURDIR)/output
+	@cp $(CURDIR)/payload/output/kefir-updater.bin $(CURDIR)/output/kefir-updater.bin
 	@[ -d $@ ] || mkdir -p $@
 	@MSYS2_ARG_CONV_EXCL="-D;$(MSYS2_ARG_CONV_EXCL)" $(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+	@cp $(OUTPUT).nro $(CURDIR)/output/kefir-updater.nro
 
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
 ifeq ($(strip $(APP_JSON)),)
 	@rm -fr $(BUILD) $(notdir $(CURDIR))*.nro $(notdir $(CURDIR))*.nacp $(notdir $(CURDIR))*.elf
-# @rm -fr $(CURDIR)/aiosu-forwarder/build $(CURDIR)/aiosu-forwarder/*.nro $(CURDIR)/aiosu-forwarder/*.nacp $(CURDIR)/aiosu-forwarder/*.elf
 else
 	@rm -fr $(BUILD) $(TARGET).nsp $(TARGET).nso $(TARGET).npdm $(TARGET).elf
 endif
 
+nxlink:
+	nxlink -a 192.168.1.144 -p /kefirupdater/kefir-updater.nro output/kefir-updater.nro
+
+copy:
+	@cp $(CURDIR)/output/kefir-updater.nro /mnt/e/Switch/_kefir/kefir/switch/kefirupdater/kefir-updater.nro
+	@cp $(CURDIR)/output/kefir-updater.bin /mnt/e/Switch/_kefir/kefir/switch/kefirupdater/kefir-updater.bin
 
 #---------------------------------------------------------------------------------
 else

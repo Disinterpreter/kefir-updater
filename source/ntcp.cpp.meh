@@ -113,13 +113,13 @@ void serviceCleanup(void)
     timeExit();
 }
 
-void print(const std::string& msg)
+void print(const char *msg)
 {
     puts(msg);
     consoleUpdate(NULL);
 }
 
-void printWithArgs(const std::string& msg, ...)
+void printWithArgs(const char *msg, ...)
 {
     va_list args;
     va_start(args, msg);
@@ -132,7 +132,7 @@ void printWithArgs(const std::string& msg, ...)
 
 std::string syncTime()
 {
-    const std::string& server_name = "0.pool.ntp.org";
+    const char *server_name = "0.pool.ntp.org";
     const uint16_t port = 123;
     int sockfd = -1;
     std::stringstream out;

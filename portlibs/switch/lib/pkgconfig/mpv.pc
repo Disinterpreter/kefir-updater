@@ -1,0 +1,12 @@
+prefix=/opt/devkitpro/portlibs/switch
+exec_prefix=/opt/devkitpro/portlibs/switch
+libdir=/opt/devkitpro/portlibs/switch/lib
+includedir=/opt/devkitpro/portlibs/switch/include
+
+Name: mpv
+Description: mpv media player client library
+Version: 1.106.0
+Requires:
+Libs: -L${libdir} -lmpv
+Libs.private: -lavfilter -lass -lfribidi -lfreetype -lpng16 -lswscale -lavformat -lbz2 -lavcodec -lvpx -lpthread -lopus -lswresample -lavutil -lm -lSDL2 -lEGL -lglapi -ldrm_nouveau -lnx -lz
+Cflags: -I${includedir}

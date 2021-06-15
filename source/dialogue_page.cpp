@@ -1,14 +1,12 @@
 #include "dialogue_page.hpp"
 #include "utils.hpp"
+#include "reboot_payload.h"
 #include "main_frame.hpp"
-#include "fs.hpp"
-#include <filesystem>
-#include <algorithm>
 
 namespace i18n = brls::i18n;
 using namespace i18n::literals;
 
-DialoguePage::DialoguePage(brls::StagedAppletFrame* frame, std::string text, bool erista) : erista(erista)
+DialoguePage::DialoguePage(brls::StagedAppletFrame* frame, std::string text)
 {
     this->button1 = (new brls::Button(brls::ButtonStyle::REGULAR))->setLabel("menus/common/yes"_i18n);
     this->button1->setParent(this);
@@ -23,19 +21,7 @@ DialoguePage::DialoguePage(brls::StagedAppletFrame* frame, std::string text, boo
     });
 
     this->button2->getClickEvent()->subscribe([frame, this](View* view) {
-        if(this->erista) {
-            util::rebootToPayload(RCM_PAYLOAD_PATH);
-        }
-        else {
-            if(std::filesystem::exists(UPDATE_BIN_PATH)) {
-                fs::copyFile(UPDATE_BIN_PATH, MARIKO_PAYLOAD_PATH_TEMP);
-            }
-            else {
-                fs::copyFile(REBOOT_PAYLOAD_PATH, MARIKO_PAYLOAD_PATH_TEMP);
-            }
-            fs::copyFile(RCM_PAYLOAD_PATH, MARIKO_PAYLOAD_PATH);
-            util::shutDown(true);
-        }
+        reboot_to_payload(RCM_PAYLOAD_PATH);
         brls::Application::popView();
     });
 
@@ -60,18 +46,6 @@ void DialoguePage::draw(NVGcontext* vg, int x, int y, unsigned width, unsigned h
 {
     this->label->frame(ctx);
     this->button1->frame(ctx);
-
-    auto end = std::chrono::high_resolution_clock::now();
-    auto missing = std::max(1l - std::chrono::duration_cast<std::chrono::seconds>(end - start).count(), 0l);
-    auto text =  std::string("menus/common/no"_i18n);
-    if (missing > 0) {
-        this->button2->setLabel(text + " (" + std::to_string(missing) + ")");
-        this->button2->setState(brls::ButtonState::DISABLED);
-    } else {
-        this->button2->setLabel(text);
-        this->button2->setState(brls::ButtonState::ENABLED);
-    }
-    this->button2->invalidate();
     this->button2->frame(ctx);
 }
 
@@ -97,8 +71,6 @@ void DialoguePage::layout(NVGcontext* vg, brls::Style* style, brls::FontStash* s
         style->CrashFrame.buttonWidth,
         style->CrashFrame.buttonHeight);
     this->button2->invalidate();
-
-    start = std::chrono::high_resolution_clock::now() + std::chrono::milliseconds(150);
 }
 
 brls::View* DialoguePage::getDefaultFocus()

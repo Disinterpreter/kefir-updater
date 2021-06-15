@@ -1,0 +1,52 @@
+.TH "zzip_entry_fopen" "3" "0\&.13\&.69" "zziplib" "zziplib Function List"
+.ie \n(.g .ds Aq \(aq
+.el        .ds Aq 
+.nh
+.ad l
+.SH "NAME"
+zzip_entry_fopen, zzip_entry_ffile, zzip_entry_fread, zzip_entry_fclose, zzip_entry_feof \-  open a file within a zip disk for reading 
+.SH "SYNOPSIS"
+.sp
+.nf
+.B "#include <zzip/fseeko\&.h>"
+.B ""
+.sp
+zzip__new__ ZZIP_ENTRY_FILE *
+\fIzzip_entry_fopen\fR(ZZIP_ENTRY * entry, int takeover)
+
+zzip__new__ ZZIP_ENTRY_FILE *
+\fIzzip_entry_ffile\fR(FILE * disk, char *filename)
+
+zzip_size_t
+\fIzzip_entry_fread\fR(void *ptr, zzip_size_t sized, zzip_size_t nmemb,
+                 ZZIP_ENTRY_FILE * file)
+
+int
+\fIzzip_entry_fclose\fR(ZZIP_ENTRY_FILE * file)
+
+int
+\fIzzip_entry_feof\fR(ZZIP_ENTRY_FILE * file)
+
+
+.fi
+.sp
+.SH "DESCRIPTION"
+ The \fIzzip_entry_fopen\fP function does take an "entry" argument and copies it (or just takes it over as owner) to a new ZZIP_ENTRY_FILE handle structure. That structure contains also a zlib buffer for decoding. The \fIzzip_entry_fopen\fP function does seek to the file_header of the given "entry" and validates it for the data buffer following it. We do also prefetch some data from the data buffer thereby trying to match the disk pagesize for faster access later. The \fIzzip_entry_fread\fP will then read in chunks of pagesizes which is the size of the internal readahead buffer. If an error occurs then null is returned.  
+.sp
+ The \fIzzip_entry_ffile\fP function opens a file found by name, so it does a search into the zip central directory with \fIzzip_entry_findfile\fP and whatever is found first is given to \fIzzip_entry_fopen\fP  
+.sp
+ The \fIzzip_entry_fread\fP function reads more bytes into the output buffer specified as arguments. The return value is null on eof or error, the stdio-like interface can not distinguish between these so you need to check with \fIzzip_entry_feof\fP for the difference.  
+.sp
+ The \fIzzip_entry_fclose\fP function releases any zlib decoder info needed for decompression and dumps the ZZIP_ENTRY_FILE struct then.  
+.sp
+ The \fIzzip_entry_feof\fP function allows to distinguish an error from an eof condition. Actually, if we found an error but we did already reach eof then we just keep on saying that it was an eof, so the app can just continue.  
+.sp
+.sp
+.SH "AUTHOR"
+ Guido Draheim <guidod@gmx.de> 
+.sp
+.sp
+.SH "COPYRIGHT"
+ Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)  
+.sp
+.sp

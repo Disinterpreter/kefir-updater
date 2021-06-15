@@ -11,23 +11,15 @@
 
 namespace i18n = brls::i18n;
 using namespace i18n::literals;
-AppPage::AppPage(const appPageType type) : AppletFrame(true, true)
+AppPage::AppPage(const bool cheatSlips) : AppletFrame(true, true)
 {
+    this->setTitle(cheatSlips ? "menus/cheats/cheastlips_title"_i18n : "menus/cheats/installed"_i18n);
     list = new brls::List();
-    switch(type){
-        case appPageType::base:
-            this->setTitle("menus/cheats/installed"_i18n);
-            label = new brls::Label(brls::LabelStyle::DESCRIPTION, "menus/cheats/label"_i18n, true);
-            break;
-        case appPageType::cheatSlips:
-            this->setTitle("menus/cheats/cheastlips_title"_i18n);
-            label = new brls::Label(brls::LabelStyle::DESCRIPTION, "menus/cheats/cheatslips_select"_i18n, true);
-            break;
-        case appPageType::gbatempCheats:
-            this->setTitle("menus/cheats/gbatemp_title"_i18n);
-            label = new brls::Label( brls::LabelStyle::DESCRIPTION,"menus/cheats/cheatslips_select"_i18n,true);
-            break;
-    }
+    label = new brls::Label(
+        brls::LabelStyle::DESCRIPTION,
+        cheatSlips ? "menus/cheats/cheatslips_select"_i18n : "menus/cheats/label"_i18n,
+        true
+    );
     list->addView(label);
 
     NsApplicationRecord record;
@@ -42,7 +34,7 @@ AppPage::AppPage(const appPageType type) : AppletFrame(true, true)
 
     titles = fs::readLineByLine(UPDATED_TITLES_PATH);
 
-    if(!titles.empty() || type == appPageType::cheatSlips || type == appPageType::gbatempCheats) {
+    if(!titles.empty() || cheatSlips){
         while (true)
         {
             rc = nsListApplicationRecord(&record, sizeof(record), i, &recordCount);
@@ -59,23 +51,17 @@ AppPage::AppPage(const appPageType type) : AppletFrame(true, true)
                 i++;
                 continue;
             }
-            if(type == appPageType::base && titles.find(util::formatApplicationId(tid)) == titles.end()) {
+            if(!cheatSlips && titles.find(util::formatApplicationId(tid)) == titles.end()) {
                 i++;
                 continue;
             }
 
             listItem = new brls::ListItem(std::string(langEntry->name), "", util::formatApplicationId(tid));
             listItem->setThumbnail(controlData.icon, sizeof(controlData.icon));
-
-            switch(type){
-                case appPageType::cheatSlips:
-                    listItem->getClickEvent()->subscribe([&, tid](brls::View* view) { brls::Application::pushView(new DownloadCheatsPage_CheatSlips(tid)); });
-                    break;
-                case appPageType::gbatempCheats:
-                    listItem->getClickEvent()->subscribe([&, tid](brls::View* view) { brls::Application::pushView(new DownloadCheatsPage_GbaTemp(tid)); });
-                    break;
-                case appPageType::base:
-                    break;
+            if(cheatSlips){
+                listItem->getClickEvent()->subscribe([&, tid](brls::View* view) {
+                    brls::Application::pushView(new DownloadCheatsPage(tid));
+                });
             }
 
             list->addView(listItem);

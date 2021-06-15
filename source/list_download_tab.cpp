@@ -47,28 +47,14 @@ ListDownloadTab::ListDownloadTab(const archiveType type) :
             break;
         case archiveType::cfw:
             links = download::getLinks(CFW_URL);
-            sxoslinks = download::getLinks(SXOS_URL);
-            links.insert(links.end(), sxoslinks.begin(), sxoslinks.end());
             operation += "menus/main/cfw"_i18n;
-            this->description->setText(
-                "menus/main/cfw_text"_i18n 
-            );
+            this->description = new brls::Label(brls::LabelStyle::MEDIUM, (CurrentCfw::running_cfw == CFW::ams ? "\n" + "menus/ams_update/current_ams"_i18n + CurrentCfw::getAmsInfo() : ""), true);
             break;
         case archiveType::cheats:
             auto cheatsVerVec = download::downloadFile(CHEATS_URL_VERSION);
             std::string cheatsVer(cheatsVerVec.begin(), cheatsVerVec.end());
             if(cheatsVer != ""){
-                switch(CurrentCfw::running_cfw){
-                    case CFW::sxos:
-                        links.push_back(std::make_pair("menus/main/get_cheats"_i18n + cheatsVer + ")", CHEATS_URL_TITLES));
-                        break;
-                    case CFW::ams:
-                        links.push_back(std::make_pair("menus/main/get_cheats"_i18n + cheatsVer + ")", CHEATS_URL_CONTENTS));
-                        break;
-                    case CFW::rnx:
-                        links.push_back(std::make_pair("menus/main/get_cheats"_i18n + cheatsVer + ")", CHEATS_URL_CONTENTS));
-                        break;
-                }
+                links.push_back(std::make_pair("menus/main/get_cheats"_i18n + cheatsVer + ")", CHEATS_URL_CONTENTS));
             }
             operation += "menus/main/cheats"_i18n;
             currentCheatsVer += util::readVersion(CHEATS_VERSION);
@@ -121,85 +107,68 @@ ListDownloadTab::ListDownloadTab(const archiveType type) :
     }
 
     if(type == archiveType::cheats){
-        cheatsLabel = new brls::Label(
-            brls::LabelStyle::DESCRIPTION,
-            "menus/cheats/cheats_label"_i18n,
-                true
+        cheatSlipLabel = new brls::Label(
+        brls::LabelStyle::DESCRIPTION,
+        "menus/cheats/cheatslips_label"_i18n,
+            true
         );
-        this->addView(cheatsLabel);
-        creategbatempItem();
-        createCheatSlipItem();
-    }
-}
-
-void ListDownloadTab::createCheatSlipItem() {
-    this->size += 1;
-    cheatslipsItem = new brls::ListItem("menus/cheats/get_cheatslips"_i18n);
-    cheatslipsItem->setHeight(LISTITEM_HEIGHT);
-    cheatslipsItem->getClickEvent()->subscribe([&](brls::View* view) {
-        if(std::filesystem::exists(TOKEN_PATH)) {
-            brls::Application::pushView(new AppPage(appPageType::cheatSlips));
-            return true;
-        }
-        else {
-            SwkbdConfig kbd;
-            char usr[0x100] = {0};
-            char pwd[0x100] = {0};
-            Result rc = swkbdCreate(&kbd, 0);
-            if (R_SUCCEEDED(rc)) {
-                swkbdConfigMakePresetDefault(&kbd);
-                swkbdConfigSetOkButtonText(&kbd, "Submit");
-                swkbdConfigSetGuideText(&kbd, "www.cheatslips.com e-mail");
-                swkbdShow(&kbd, usr, sizeof(usr));
-                swkbdClose(&kbd);
-                rc = swkbdCreate(&kbd, 0);
-                if(R_SUCCEEDED(rc)){
-                    swkbdConfigMakePresetPassword(&kbd);
-                    swkbdConfigSetOkButtonText(&kbd, "Submit");
-                    swkbdConfigSetGuideText(&kbd, "www.cheatslips.com password");
-                    swkbdShow(&kbd, pwd, sizeof(pwd));
-                    swkbdClose(&kbd);
-                }
-            }
-            std::string body =  "{\"email\":\"" + std::string(usr) 
-                                + "\",\"password\":\"" + std::string(pwd) + "\"}";
-            nlohmann::json token = download::getRequest(CHEATSLIPS_TOKEN_URL, 
-                {"Accept: application/json", 
-                "Content-Type: application/json", 
-                "charset: utf-8"}, 
-            body);
-            if(token.find("token") != token.end()) {
-                std::ofstream tokenFile(TOKEN_PATH);
-                tokenFile << token.dump();
-                tokenFile.close();
-                brls::Application::pushView(new AppPage(appPageType::cheatSlips));
+        this->addView(cheatSlipLabel);
+        this->size += 1;
+        cheatslipsItem = new brls::ListItem("menus/cheats/get_cheatslips"_i18n);
+        cheatslipsItem->setHeight(LISTITEM_HEIGHT);
+        cheatslipsItem->getClickEvent()->subscribe([&](brls::View* view) {
+            if(std::filesystem::exists(TOKEN_PATH)) {
+                brls::Application::pushView(new AppPage(true));
                 return true;
             }
             else {
-                brls::Dialog* dialog = new brls::Dialog("menus/cheats/cheatslips_wrong_id"_i18n + "\n" + "menus/cheats/kb_error"_i18n);
-                brls::GenericEvent::Callback callback = [dialog](brls::View* view) {
-                    dialog->close();
-                };
-                dialog->addButton("menus/common/ok"_i18n, callback);
-                dialog->setCancelable(true);
-                dialog->open();
-                return true;
+                SwkbdConfig kbd;
+                char usr[0x100] = {0};
+                char pwd[0x100] = {0};
+                Result rc = swkbdCreate(&kbd, 0);
+                if (R_SUCCEEDED(rc)) {
+                    swkbdConfigMakePresetDefault(&kbd);
+                    swkbdConfigSetOkButtonText(&kbd, "Submit");
+                    swkbdConfigSetGuideText(&kbd, "www.cheatslips.com e-mail");
+                    swkbdShow(&kbd, usr, sizeof(usr));
+                    swkbdClose(&kbd);
+                    rc = swkbdCreate(&kbd, 0);
+                    if(R_SUCCEEDED(rc)){
+                        swkbdConfigMakePresetPassword(&kbd);
+                        swkbdConfigSetOkButtonText(&kbd, "Submit");
+                        swkbdConfigSetGuideText(&kbd, "www.cheatslips.com password");
+                        swkbdShow(&kbd, pwd, sizeof(pwd));
+                        swkbdClose(&kbd);
+                    }
+                }
+                std::string body =  "{\"email\":\"" + std::string(usr) 
+                                    + "\",\"password\":\"" + std::string(pwd) + "\"}";
+                nlohmann::json token = download::getRequest(CHEATSLIPS_TOKEN_URL, 
+                    {"Accept: application/json", 
+                    "Content-Type: application/json", 
+                    "charset: utf-8"}, 
+                body);
+                if(token.find("token") != token.end()) {
+                    std::ofstream tokenFile(TOKEN_PATH);
+                    tokenFile << token.dump();
+                    tokenFile.close();
+                    brls::Application::pushView(new AppPage(true));
+                    return true;
+                }
+                else {
+                    brls::Dialog* dialog = new brls::Dialog("menus/cheats/cheatslips_wrong_id"_i18n + "\n" + "menus/cheats/kb_error"_i18n);
+                    brls::GenericEvent::Callback callback = [dialog](brls::View* view) {
+                        dialog->close();
+                    };
+                    dialog->addButton("menus/common/ok"_i18n, callback);
+                    dialog->setCancelable(true);
+                    dialog->open();
+                    return true;
+                }
             }
-        }
-    });
-    this->addView(cheatslipsItem);
-}
-
-
-void ListDownloadTab::creategbatempItem() {
-    this->size += 1;
-    gbatempItem = new brls::ListItem("menus/cheats/get_gbatemp"_i18n);
-    gbatempItem->setHeight(LISTITEM_HEIGHT);
-    gbatempItem->getClickEvent()->subscribe([&](brls::View* view) {
-        brls::Application::pushView(new AppPage(appPageType::gbatempCheats));
-        return true;
-    });
-    this->addView(gbatempItem);
+        });
+        this->addView(cheatslipsItem);
+    }
 }
 
 brls::View* ListDownloadTab::getDefaultFocus()

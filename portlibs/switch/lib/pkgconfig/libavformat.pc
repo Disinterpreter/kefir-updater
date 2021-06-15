@@ -1,0 +1,14 @@
+prefix=/opt/devkitpro/portlibs/switch
+exec_prefix=${prefix}
+libdir=/opt/devkitpro/portlibs/switch/lib
+includedir=/opt/devkitpro/portlibs/switch/include
+
+Name: libavformat
+Description: FFmpeg container format library
+Version: 58.29.100
+Requires: libavcodec >= 58.54.100, libswresample >= 3.5.100, libavutil >= 56.31.100
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lavformat -lm -lbz2 -L/opt/devkitpro/portlibs/switch/lib -lz -lnx
+Libs.private: 
+Cflags: -I${includedir}

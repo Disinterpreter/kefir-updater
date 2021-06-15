@@ -1,0 +1,38 @@
+.TH "zzip_read" "3" "0\&.13\&.69" "zziplib" "zziplib Function List"
+.ie \n(.g .ds Aq \(aq
+.el        .ds Aq 
+.nh
+.ad l
+.SH "NAME"
+zzip_read, zzip_fread \-  read data\&. 
+.SH "SYNOPSIS"
+.sp
+.nf
+.B "#include <zzip/lib\&.h>"
+.B ""
+.sp
+zzip_ssize_t
+\fIzzip_read\fR(ZZIP_FILE * fp, void *buf, zzip_size_t len)
+
+zzip_size_t
+\fIzzip_fread\fR(void *ptr, zzip_size_t size, zzip_size_t nmemb, ZZIP_FILE * file)
+
+
+.fi
+.sp
+.SH "DESCRIPTION"
+ The \fIzzip_read\fP function will read(2) data from a real/zipped file. 
+.sp
+ The \fIzzip_read\fP function is the replacement for \fIread(2)\fP will fill the given buffer with bytes from the opened file. It will return the number of bytes read, so if the EOF is encountered you will be prompted with the number of bytes actually read. 
+.sp
+ If the file-handle is wrapping a stat'able file then it will actually just perform a normal \fIread(2)\fP-call, otherwise \fIzzip_file_read\fP is called to decompress the data stream and any error is mapped to \fIerrno(3)\fP.  
+.sp
+.sp
+.SH "AUTHOR"
+ Guido Draheim <guidod@gmx.de> Tomi Ollila <Tomi.Ollila@iki.fi> 
+.sp
+.sp
+.SH "COPYRIGHT"
+ Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)  
+.sp
+.sp

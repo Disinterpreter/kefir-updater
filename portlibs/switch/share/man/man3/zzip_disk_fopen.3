@@ -1,0 +1,60 @@
+.TH "zzip_disk_fopen" "3" "0\&.13\&.69" "zziplib" "zziplib Function List"
+.ie \n(.g .ds Aq \(aq
+.el        .ds Aq 
+.nh
+.ad l
+.SH "NAME"
+zzip_disk_fopen, zzip_disk_entry_fopen, zzip_disk_fread, zzip_disk_fclose, zzip_disk_feof \-  openening a file part wrapped within a (mmapped) zip archive 
+.SH "SYNOPSIS"
+.sp
+.nf
+.B "#include <zzip/mmapped\&.h>"
+.B ""
+.sp
+zzip__new__ ZZIP_DISK_FILE *
+\fIzzip_disk_fopen\fR(ZZIP_DISK * disk, char *filename)
+
+zzip__new__ ZZIP_DISK_FILE *
+\fIzzip_disk_entry_fopen\fR(ZZIP_DISK * disk, ZZIP_DISK_ENTRY * entry)
+
+zzip_size_t
+\fIzzip_disk_fread\fR(void *ptr, zzip_size_t sized, zzip_size_t nmemb,
+                ZZIP_DISK_FILE * file)
+
+int
+\fIzzip_disk_fclose\fR(ZZIP_DISK_FILE * file)
+
+int
+\fIzzip_disk_feof\fR(ZZIP_DISK_FILE * file)
+
+
+.fi
+.sp
+.SH "DESCRIPTION"
+ The \fIzzip_disk_fopen\fP function opens a file found by name, so it does a search into the zip central directory with \fIzzip_disk_findfile\fP and whatever is found first is given to \fIzzip_disk_entry_fopen\fP 
+.sp
+ The \fIzzip_disk_fopen\fP function may return null on errors (errno).  
+.sp
+ the ZZIP_DISK_FILE* is rather simple in just encapsulating the arguments given to the \fIzzip_disk_entry_fopen\fP function plus a zlib deflate buffer. Note that the ZZIP_DISK pointer does already contain the full mmapped file area of a zip disk, so open()ing a file part within that area happens to be a lookup of its bounds and encoding. That information is memorized on the ZZIP_DISK_FILE so that subsequent _read() operations will be able to get the next data portion or return an eof condition for that file part wrapped in the zip archive. 
+.sp
+ The \fIzzip_disk_entry_fopen\fP function may return null on errors (errno = ENOMEM|EBADMSG).  
+.sp
+ The \fIzzip_disk_fread\fP function reads more bytes into the output buffer specified as arguments. The return value is null on eof or error, the stdio-like interface can not distinguish between these so you need to check with \fIzzip_disk_feof\fP for the difference.  
+.sp
+ The \fIzzip_disk_fclose\fP function releases any zlib decoder info needed for decompression and dumps the ZZIP_DISK_FILE* then. 
+.sp
+ The \fIzzip_disk_fclose\fP function always returns 0.  
+.sp
+ The \fIzzip_disk_feof\fP function allows to distinguish an error from an eof condition. Actually, if we found an error but we did already reach eof then we just keep on saying that it was an eof, so the app can just continue. 
+.sp
+ The \fIzzip_disk_feof\fP function returns EOF in case and 0 when not at the end of file.  
+.sp
+.sp
+.SH "AUTHOR"
+ Guido Draheim <guidod@gmx.de> 
+.sp
+.sp
+.SH "COPYRIGHT"
+ Copyright (c)Guido Draheim, use under copyleft (LGPL,MPL)  
+.sp
+.sp

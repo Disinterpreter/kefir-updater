@@ -6,11 +6,6 @@
 
 typedef struct app App;
 
-enum class appPageType{
-    base,
-    cheatSlips,
-    gbatempCheats
-};
 
 class AppPage : public brls::AppletFrame
 {
@@ -23,5 +18,5 @@ class AppPage : public brls::AppletFrame
         std::set<std::string> titles;
 
     public:
-        AppPage(const appPageType type = appPageType::base);
+        AppPage(const bool cheatSlips = false);
 };

@@ -1,9 +1,4 @@
 #include "extract.hpp"
-#include "progress_event.hpp"
-#include "utils.hpp"
-#include "download.hpp"
-#include "fs.hpp"
-#include "main_frame.hpp"
 #include <string>
 #include <vector>
 #include <sstream>
@@ -14,6 +9,10 @@
 #include <fstream>
 #include <set>
 #include <unzipper.h>
+#include "progress_event.hpp"
+#include "utils.hpp"
+#include "download.hpp"
+#include "fs.hpp"
 
 namespace i18n = brls::i18n;
 using namespace i18n::literals;
@@ -24,79 +23,82 @@ namespace extract {
         bool caselessCompare (const std::string& a, const std::string& b){
             return strcasecmp(a.c_str(), b.c_str()) < 0;
         }
-
-        void preWork(zipper::Unzipper& unzipper, const std::string& workingPath, std::vector<zipper::ZipEntry>& entries) {
-            chdir(workingPath.c_str());
-            entries = unzipper.entries();
-            s64 uncompressedSize = 0;
-            s64 freeStorage;
-            for (const auto& entry: entries)
-                uncompressedSize += entry.uncompressedSize;
-
-            if(R_SUCCEEDED(fs::getFreeStorageSD(freeStorage))) {
-                if(uncompressedSize * 1.1 > freeStorage) {
-                    unzipper.close();
-                    brls::Application::crash("menus/errors/unsufficient_storage"_i18n);
-                    usleep(2000000);
-                    brls::Application::quit();
-                }
-            }
-            ProgressEvent::instance().reset();
-            ProgressEvent::instance().setStep(1);
-            ProgressEvent::instance().setTotalSteps(entries.size() + 1);
-        }
     }
 
-void extract(const std::string&  filename, const std::string& workingPath, int overwriteInis){
-    zipper::Unzipper unzipper(filename);
-    std::vector<zipper::ZipEntry> entries;
-    preWork(unzipper, workingPath, entries);
+void extract(const char * filename, const char* workingPath, int overwriteInis){
+    ProgressEvent::instance().reset();
+    ProgressEvent::instance().setStep(1);
+    chdir(workingPath);
     std::set<std::string> ignoreList = fs::readLineByLine(FILES_IGNORE);
-    for (const auto& entry : entries) {
-        if((overwriteInis == 0 && entry.name.substr(entry.name.length() - 4) == ".ini")
-        || find_if(ignoreList.begin(), ignoreList.end(),    [&entry](std::string ignored) {
-                                                            u8 res = ("/" + entry.name).find(ignored);
-                                                            return (res == 0 || res == 1); }) != ignoreList.end())
-        {
-            if(!std::filesystem::exists("/" + entry.name)) {
-                unzipper.extractEntry(entry.name);
+    std::set<std::string>::iterator it;
+    zipper::Unzipper unzipper(filename);
+    std::vector<zipper::ZipEntry> entries = unzipper.entries();
+    int k = -1;
+    bool isIgnored;
+    ProgressEvent::instance().setTotalSteps(entries.size() + 1);
+    for (int i = 0; i < (int) entries.size(); i++){
+        isIgnored = false;
+        it = ignoreList.begin();
+        if(overwriteInis == 0 && entries[i].name.substr(entries[i].name.length() - 4) == ".ini"){
+            if(!std::filesystem::exists("/" + entries[i].name)){
+                unzipper.extractEntry(entries[i].name);
             }
+            continue;
         }
-        else if(entry.name == "sept/payload.bin" || entry.name == "atmosphere/fusee-secondary.bin" || entry.name == "atmosphere/stratosphere.romfs"){
-            std::ofstream readonlyFile(entry.name + ".aio");
-            unzipper.extractEntryToStream(entry.name, readonlyFile);
-        }
-        else {
-            unzipper.extractEntry(entry.name);
-            if(entry.name.substr(0, 13) == "hekate_ctcaer") {
-                fs::copyFile("/" + entry.name, UPDATE_BIN_PATH);
+        while (it != ignoreList.end() ){
+            k = ("/" + entries[i].name).find((*it));
+            if(k == 0 || k == 1){
+                isIgnored = false;
+                if(!std::filesystem::exists("/" + entries[i].name)){
+                    unzipper.extractEntry(entries[i].name);
+                }
+                break;
             }
+            it++;
         }
-        ProgressEvent::instance().incrementStep(1);
+                unzipper.extractEntry(entries[i].name);
+                if(entries[i].name.substr(0, 13) == "hekate_ctcaer") {
+                    fs::copyFile(("/" + entries[i].name).c_str(), UPDATE_BIN_PATH);
+                }
+
+        
+        ProgressEvent::instance().setStep(i);
     }
     unzipper.close();
     ProgressEvent::instance().setStep(ProgressEvent::instance().getMax());
 }
 
-void extract(const std::string&  filename, const std::string& workingPath, const std::string& toExclude){
-    zipper::Unzipper unzipper(filename);
-    std::vector<zipper::ZipEntry> entries;
-    preWork(unzipper, workingPath, entries);
+void extract(const char * filename, const char* workingPath, const char* toExclude){
+    ProgressEvent::instance().reset();
+    ProgressEvent::instance().setStep(1);
+    chdir(workingPath);
     std::set<std::string> ignoreList = fs::readLineByLine(FILES_IGNORE);
     ignoreList.insert(toExclude);
-    for (const auto& entry : entries) {
-        if(find_if(ignoreList.begin(), ignoreList.end(),    [&entry](std::string ignored) {
-                                                            u8 res = ("/" + entry.name).find(ignored);
-                                                            return (res == 0 || res == 1); }) != ignoreList.end()) 
-        {
-            if(!std::filesystem::exists("/" + entry.name)){
-                    unzipper.extractEntry(entry.name);
+    std::set<std::string>::iterator it;
+    zipper::Unzipper unzipper(filename);
+    std::vector<zipper::ZipEntry> entries = unzipper.entries();
+    int k = -1;
+    bool isIgnored;
+    ProgressEvent::instance().setTotalSteps(entries.size() + 1);
+    for (int i = 0; i < (int) entries.size(); i++){
+        isIgnored = false;
+        it = ignoreList.begin();
+        while (it != ignoreList.end()){
+            k = ("/" + entries[i].name).find((*it));
+            if(k == 0 || k == 1){
+                isIgnored = true;
+                if(!std::filesystem::exists("/" + entries[i].name)){
+                    unzipper.extractEntry(entries[i].name);
+                }
+                break;
             }
+            it++;
         }
-        else {
-            unzipper.extractEntry(entry.name);
+        if(!isIgnored) {
+            unzipper.extractEntry(entries[i].name);
         }
-        ProgressEvent::instance().incrementStep(1);
+        
+        ProgressEvent::instance().setStep(i);
     }
     unzipper.close();
     ProgressEvent::instance().setStep(ProgressEvent::instance().getMax());
@@ -134,9 +136,10 @@ std::vector<std::string> getInstalledTitlesNs(){
     return titles;
 }
 
-std::vector<std::string> excludeTitles(const std::string& path, std::vector<std::string> listedTitles){
+std::vector<std::string> excludeTitles(const char* path, std::vector<std::string> listedTitles){
     std::vector<std::string> titles;
     std::ifstream file(path);
+    int total = 0;
     std::string name;
 
     if (file.is_open()) {
@@ -161,7 +164,8 @@ std::vector<std::string> excludeTitles(const std::string& path, std::vector<std:
     return diff;
 }
 
-void extractCheats(const std::string&  zipPath, std::vector<std::string> titles, CFW cfw, bool credits){
+void extractCheats(const char * zipPath, std::vector<std::string> titles, CFW cfw, bool credits){
+    //TODO: REWRITE WITH SETS INSTEAD OF VECTORS
     ProgressEvent::instance().reset();
     zipper::Unzipper unzipper(zipPath);
     std::vector<zipper::ZipEntry> entries = unzipper.entries();
@@ -199,6 +203,7 @@ void extractCheats(const std::string&  zipPath, std::vector<std::string> titles,
     std::vector<std::string> parents;
     std::vector<std::vector<std::string>> children;
     std::vector<std::string> tempChildren;
+
 
     size_t k = 0;
     while(k < entriesNames.size()){
@@ -251,7 +256,7 @@ void extractCheats(const std::string&  zipPath, std::vector<std::string> titles,
     ProgressEvent::instance().setStep(ProgressEvent::instance().getMax());
 }
 
-void extractAllCheats(const std::string&  zipPath, CFW cfw){
+void extractAllCheats(const char * zipPath, CFW cfw){
     ProgressEvent::instance().reset();
     zipper::Unzipper unzipper(zipPath);
     std::vector<zipper::ZipEntry> entries = unzipper.entries();
@@ -277,11 +282,11 @@ void extractAllCheats(const std::string&  zipPath, CFW cfw){
             break;
     }
     ProgressEvent::instance().setTotalSteps(entries.size());
-    for(const auto& entry : entries) {
-        if(((int) entry.name.size() == offset + 16 + 4) && (isBID(entry.name.substr(offset, 16)))) {
-            unzipper.extractEntry(entry.name);
+    for(size_t j = 0; j < entries.size(); j++){
+        if(((int) entries[j].name.size() == offset + 16 + 4) && (isBID(entries[j].name.substr(offset, 16)))) {
+            unzipper.extractEntry(entries[j].name);
         }
-        ProgressEvent::instance().incrementStep(1);
+        ProgressEvent::instance().setStep(j);
     }
     unzipper.close();
     auto cheatsVerVec = download::downloadFile(CHEATS_URL_VERSION);
@@ -297,7 +302,7 @@ bool isBID(std::string bid) {
     return true;
 }
 
-void writeTitlesToFile(std::set<std::string> titles, const std::string& path){
+void writeTitlesToFile(std::set<std::string> titles, const char* path){
     std::ofstream updatedTitlesFile;
     std::set<std::string>::iterator it = titles.begin();
     updatedTitlesFile.open(path, std::ofstream::out | std::ofstream::trunc);
@@ -325,6 +330,7 @@ void removeCheats(CFW cfw){
     }
     ProgressEvent::instance().reset();
     ProgressEvent::instance().setTotalSteps(std::distance(std::filesystem::directory_iterator(path), std::filesystem::directory_iterator()));
+    int c = 0;
     for (const auto & entry : std::filesystem::directory_iterator(path)){
         std::string cheatsPath =  entry.path().string() + "/cheats";
         if(std::filesystem::exists(cheatsPath)){
@@ -336,7 +342,7 @@ void removeCheats(CFW cfw){
                 rmdir(entry.path().string().c_str());
             }
         }
-        ProgressEvent::instance().incrementStep(1);
+        ProgressEvent::instance().setStep(c++);
     }
     std::filesystem::remove(UPDATED_TITLES_PATH);
     std::filesystem::remove(CHEATS_VERSION);

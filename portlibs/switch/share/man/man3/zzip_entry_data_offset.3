@@ -1,0 +1,48 @@
+.TH "zzip_entry_data_offset" "3" "0\&.13\&.69" "zziplib" "zziplib Function List"
+.ie \n(.g .ds Aq \(aq
+.el        .ds Aq 
+.nh
+.ad l
+.SH "NAME"
+zzip_entry_data_offset, zzip_entry_fread_file_header, zzip_entry_strdup_name \-  helper functions for (fseeko) zip access api 
+.SH "SYNOPSIS"
+.sp
+.nf
+.B "#include <zzip/fseeko\&.h>"
+.B ""
+.sp
+zzip_off_t
+\fIzzip_entry_data_offset\fR(ZZIP_ENTRY * entry)
+
+static zzip_off_t
+\fIzzip_entry_fread_file_header\fR(ZZIP_ENTRY * entry,
+                             struct zzip_file_header *file_header)
+
+zzip__new__ char *
+\fIzzip_entry_strdup_name\fR(ZZIP_ENTRY * entry)
+
+
+.fi
+.sp
+.SH "DESCRIPTION"
+ The \fIzzip_entry_data_offset\fP functions returns the seekval offset of the data portion of the file referenced by the given zzip_entry. It requires an intermediate check of the file_header structure (i.e. it reads it from disk). After this call, the contained diskfile readposition is already set to the data_offset returned here. 
+.sp
+The \fIzzip_entry_data_offset\fP function Returns -1 on error. (errno = EINVAL|EBADMSG)  
+.sp
+ The \fIzzip_entry_fread_file_header\fP functions read the correspoding struct zzip_file_header from the zip disk of the given "entry". The returned off_t points to the end of the file_header where the current fseek pointer has stopped. This is used to immediately parse out any filename/extras block following the file_header. 
+.sp
+The \fIzzip_entry_fread_file_header\fP function Returns zero on error. (errno = EINVAL|EBADMSG|EBADF|EIO)  
+.sp
+ The \fIzzip_entry_strdup_name\fP function is a big helper despite its little name: in a zip file the encoded filenames are usually NOT zero-terminated but for common usage with libc we need it that way. Secondly, the filename SHOULD be present in the zip central directory but if not then we fallback to the filename given in the file_header of each compressed data portion. 
+.sp
+ returns: new string buffer, null on error (errno = EINVAL|ENOMEM|EBADMSG)  
+.sp
+.sp
+.SH "AUTHOR"
+ Guido Draheim <guidod@gmx.de> 
+.sp
+.sp
+.SH "COPYRIGHT"
+ Copyright (c) Guido Draheim, use under copyleft (LGPL,MPL)  
+.sp
+.sp
