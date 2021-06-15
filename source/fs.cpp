@@ -115,4 +115,8 @@ namespace fs {
         return str;
     }
 
+    Result getFreeStorageSD(s64& free) {
+        return nsGetFreeSpaceSize(NcmStorageId_SdCard, &free);
+    }
+
 }

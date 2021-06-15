@@ -12,16 +12,26 @@ namespace i18n = brls::i18n;
 using namespace i18n::literals;
 using json = nlohmann::json;
 
+namespace {
+    constexpr const char AppTitle[] = APP_TITLE;
+    constexpr const char AppVersion[] = APP_VERSION;
+}
+
 MainFrame::MainFrame() : TabFrame()
 {
     this->setIcon("romfs:/gui_icon.png");
-    this->setTitle(std::string(APP_TITLE));
+    this->setTitle(AppTitle);
+
+    s64 freeStorage;
 
     std::string tag = util::getLatestTag(TAGS_INFO);
-    if(!tag.empty() && tag != APP_VERSION)
-        this->setFooterText("v" + std::string(APP_VERSION) + "menus/main/new_update"_i18n);
-    else
-        this->setFooterText("v" + std::string(APP_VERSION));
+    
+    this->setFooterText(fmt::format("v{} | {:.1f}{}", 
+                            (!tag.empty() && tag != AppVersion) ? AppVersion + "menus/main/new_update"_i18n : AppVersion,
+                            R_SUCCEEDED(fs::getFreeStorageSD(freeStorage)) ? (float)freeStorage/0x40000000 : -1,
+                            "menus/main/GB_available"_i18n)
+                        );
+
     
         this->addTab("menus/main/update_cfw"_i18n, new AmsTab());
         this->addTab("menus/main/download_firmware"_i18n, new ListDownloadTab(archiveType::fw));

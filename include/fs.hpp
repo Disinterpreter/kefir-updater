@@ -16,5 +16,5 @@ namespace fs
     void createTree(std::string path);
     std::set<std::string> readLineByLine(const char * path);
     std::string readLine(const char * path);
-
+    Result getFreeStorageSD(s64& free);
 }
