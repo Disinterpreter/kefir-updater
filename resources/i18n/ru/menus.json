@@ -114,7 +114,8 @@
     "download_firmware": "Скачать прошивку",
     "download_cheats": "Скачать читы",
     "tools": "Инструменты",
-    "launch_warning": "Перед тем как пользоваться программой прочтите следующие замечания::\n\n\ue016  Перед использованием программы ознакомьтесь со способами обновления Kefir вручную. Это поможет вам лучше понимать что делать, если что-то пойдёт не так.\n\ue016  Не рекомендуется использовать карты в формате exFAT на Nintendo Switch! Используйте FAT32, если не хотите потерять ваши данные!\n\ue016  Внимательно прочитайте замечания к релизу Kefir на его официальной странице: kefir.customfw.xyz\n\nЭто сообщение не будет показано при следующих запусках программы."
+    "launch_warning": "Перед тем как пользоваться программой прочтите следующие замечания::\n\n\ue016  Перед использованием программы ознакомьтесь со способами обновления Kefir вручную. Это поможет вам лучше понимать что делать, если что-то пойдёт не так.\n\ue016  Не рекомендуется использовать карты в формате exFAT на Nintendo Switch! Используйте FAT32, если не хотите потерять ваши данные!\n\ue016  Внимательно прочитайте замечания к релизу Kefir на его официальной странице: kefir.customfw.xyz\n\nЭто сообщение не будет показано при следующих запусках программы.",
+    "GB_available": "Гб доступно на карте памяти"
   },
   "hide": {
     "title": "Hide tabs",
@@ -139,7 +140,7 @@
     "language": "Изменить язык приложения"
   },
   "utils": {
-    "fw_warning": "Из-за размера архива с прошивкой загрузка в режиме апплета невозможна. Запустите программу в режиме полного доступа к памяти через игру (запустите игру, удерживая кнопку (R) или Homebrew Launcher с главного меню приставки, если он там есть).",
+    "fw_warning": "Раззмер архива слишком большой. Запустите программу в режиме тайтла - для этого запустите любую игру, удерживая кнопку R до появления Homebrew Menu",
     "overwrite": " Do you want to overwrite existing ",
     "wrong_type_sigpatches": "The downloaded file is not a sigpatches archive. This is most likely due to a broken link. If the problem persists after more than 30 minutes, please open an issue on Github.",
     "wrong_type_fw": "The downloaded file is not a firmware archive. This is most likely due to a broken link. If the problem persists after more than 30 minutes, please open an issue on Github.",
