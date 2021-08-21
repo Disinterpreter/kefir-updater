@@ -1,7 +1,7 @@
 {
   "about": {
     "title": "Actualizador Todo-en-Uno de Nintendo Switch",
-    "copyright": "Kefir Updater tiene licencia GPL-3.0\n©  2020 HamletDuFromage, forked by xHR",
+    "copyright": "AIO-switch-updater tiene licencia GPL-3.0\n© 2020-2021 HamletDuFromage",
     "disclaimers": "\ue016  Aparte de trucos obtenidos del hilo principal de Gbatemp, HamletDuFromage no provee nada. Todo el crédito pertenece a sus respectivos dueños.\n\ue016  Los enlaces se actualizan cada tres horas. Si un enlace sigue roto después de 3 horas, por favor abre un issue en Github.\n"
   },
   "cheats": {
@@ -51,7 +51,7 @@
   "joy_con": {
     "title": "Cambiar color de Joy-Con",
     "desc_1": "Puedes cambiar el color interno de tus Joy-Cons. Asegúrate de que están acoplados a la consola.\nLos perfiles de colores se almacenan en '",
-    "desc_2": "'. Ve a 'http://bit.ly/JC-color' ",
+    "desc_2": "'. Ve a 'https://git.io/jcpicker' ",
     "desc_3": "para generar tus propios perfiles.",
     "backup": "Copia de seguridad del perfil de color actual",
     "label": "Cambiar color de Joy-Con",
@@ -87,7 +87,7 @@
     "dl_payloads": "Descargar payloads a ",
     "inject_payloads": "Inyectar payload",
     "update_app": "Actualizar la aplicación (v",
-    "dl_app": "Descargando:\nKefir Updater\n\nDesde:\n",
+    "dl_app": "Descargando:\nAIO-switch-updater\n\nDesde:\n",
     "changelog": "Cambios"
   },
   "utils": {

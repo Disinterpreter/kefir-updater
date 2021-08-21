@@ -112,6 +112,16 @@ namespace fs {
         return titles;
     }
 
+    std::string readLine(const char * path){
+        // std::string titles;
+        std::string str;
+        std::ifstream in(path);
+        if(in){
+            std::getline(in, str);
+        } else {str = "not a kefir";}
+        return str;
+    }
+
     Result getFreeStorageSD(s64& free) {
         return nsGetFreeSpaceSize(NcmStorageId_SdCard, &free);
     }

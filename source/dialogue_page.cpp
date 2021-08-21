@@ -4,6 +4,8 @@
 #include "fs.hpp"
 #include <filesystem>
 #include <algorithm>
+#include "reboot_payload.h"
+
 
 namespace i18n = brls::i18n;
 using namespace i18n::literals;
@@ -23,19 +25,7 @@ DialoguePage::DialoguePage(brls::StagedAppletFrame* frame, const std::string& te
     });
 
     this->button2->getClickEvent()->subscribe([frame, this](View* view) {
-        if(this->erista) {
-            util::rebootToPayload(RCM_PAYLOAD_PATH);
-        }
-        else {
-            if(std::filesystem::exists(UPDATE_BIN_PATH)) {
-                fs::copyFile(UPDATE_BIN_PATH, MARIKO_PAYLOAD_PATH_TEMP);
-            }
-            else {
-                fs::copyFile(REBOOT_PAYLOAD_PATH, MARIKO_PAYLOAD_PATH_TEMP);
-            }
-            fs::copyFile(RCM_PAYLOAD_PATH, MARIKO_PAYLOAD_PATH);
-            util::shutDown(true);
-        }
+        reboot_to_payload(RCM_PAYLOAD_PATH, true);
         brls::Application::popView();
     });
 

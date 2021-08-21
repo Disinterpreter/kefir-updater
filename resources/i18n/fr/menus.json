@@ -1,7 +1,7 @@
 {
   "about": {
-    "title": "Kefir Updater",
-    "copyright": "Kefir Updater est distribuée sous la license GPL-3.0\n©  2020 HamletDuFromage, forked by xHR",
+    "title": "All-in-One Nintendo Switch Updater",
+    "copyright": "AIO-switch-updater est distribuée sous la license GPL-3.0\n© 2020-2021 HamletDuFromage",
     "disclaimers": "\ue016  A part les cheat codes qui proviennent d'un mirroir d'un topic Gbatemp, HamletDuFromage n'héberge rien. Tous les crédits vont aux propriétaires respectifs\n\ue016  Les liens sont actualisés toutes les 3 heures. Si un lien reste inactif après 3 heures, merci de bien vouloir ouvrir une issue sur Github.\n"
   },
   "cheats": {
@@ -29,14 +29,14 @@
     "download": "Archive à télécharger :\n",
     "from": "\n\nLien complet de l'archive :\n",
     "ok": "Ok",
-    "shut_down": "Eteindre",
-    "reboot": "Redemarrer",
+    "shut_down": "Éteindre",
+    "reboot": "Redémarrer",
     "updating": "Mise à jour de l'app",
     "no": "Non",
     "yes": "Oui"
   },
   "changelog": {
-    "changelog": "Changelog"
+    "changelog": "liste des modifications"
   },
   "payloads": {
     "dl_payloads": "Télécharger des payloads",
@@ -51,7 +51,7 @@
   "joy_con": {
     "title": "Changement de couleur des Joy-Cons",
     "desc_1": "Vous pouvez changer la couleur interne de vos Joy-Cons. Assurez vous qu'ils soient bien ancrés à la Swich.\nLes profils de couleur se trouvent dans '",
-    "desc_2": "'. Visitez 'http://bit.ly/JC-color' ",
+    "desc_2": "'. Visitez 'https://git.io/jcpicker' ",
     "desc_3": "pour générer des profils personalisés.",
     "backup": "Sauvegarde du profil actuel",
     "label": "Échangeur de couleurs des Joy-Con",
@@ -72,9 +72,9 @@
     "cfw": "CFW",
     "cfw_text": "\ue016  Principaux CFWs. Si vous souhaitez utiliser Atmosphère avec Hekate, téléchargez Atmosphère, puis Hekate.",
     "cheats": "codes de triche",
-    "links_not_found": "Impossible de trouver un lien de téléchargement, assurez vous que la Switch soit connectée à internet.\nSi ce problème persiste, veuillez ouvrir une issue sur Github.",
+    "links_not_found": "Impossible de trouver un lien de téléchargement, assurez-vous que la Switch soit connectée à internet.\nSi ce problème persiste, veuillez ouvrir une issue sur Github.",
     "new_update": " - Nouvelle MàJ de l'app disponible",
-    "about": "A propos",
+    "about": "À propos",
     "update_cfw": "MAJ des CFW",
     "update_sigpatches": "MAJ des sigpatches",
     "download_firmware": "Téléch. des firmwares",
@@ -87,8 +87,8 @@
     "dl_payloads": "Télécharger des payloads dans ",
     "inject_payloads": "Injecter un payload",
     "update_app": "Mettre à jour l'app (v",
-    "dl_app": "Mise à jour de :\nKefir Updater\n\nDepuis :\n",
-    "changelog": "Changelog"
+    "dl_app": "Mise à jour de :\nAIO-switch-updater\n\nDepuis :\n",
+    "changelog": "Liste des modifications"
   },
   "utils": {
     "fw_warning": "En raison de la taille de l'archive FW, le téléchargement de firmwares en mode Applet n'est pas pris en charge. Veuillez lancer l'application avec un accès total à la RAM.",

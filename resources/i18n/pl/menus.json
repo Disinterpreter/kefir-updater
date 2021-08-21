@@ -1,7 +1,7 @@
 {
   "about": {
-    "title": "Kefir Updater",
-    "copyright": "Kefir Updater jest zgodny z licencją GPL-3.0\n\u00a9  2020 HamletDuFromage, forked by xHR",
+    "title": "All-in-One Nintendo Switch Updater",
+    "copyright": "AIO-switch-updater jest zgodny z licencją GPL-3.0\n\u00a9 2020-2021 HamletDuFromage",
     "disclaimers": "\ue016  Oprócz cheatów które są lustrzaną kopią tych z wątku na Gbatemp, HamletDuFromage nie hostuje żadnych innych plików. Podziękowania za nie należy kierować do ich twórców.\n\ue016  Linki są odświeżane co 30 minut. Jeśli po 30 minutach link nadal nie działa, utwórz nowy problem na Githubie.\n",
     "donate": "\ue016  Podoba ci się apka? Rozważ datek na wsparcie moich starań: 'https://git.io/donate_homlet'"
   },
@@ -73,7 +73,7 @@
   "joy_con": {
     "title": "Zmień kolor Joy-Conów",
     "desc_1": "Możesz zmienić kolor fabrycznie przypisany do twoich Joy-Conów. Upewnij się, że są zadokowane do konsoli.\nProfile kolorów zapisywane są w '",
-    "desc_2": "'. Wejdź na 'http://bit.ly/JC-color' ",
+    "desc_2": "'. Wejdź na 'https://git.io/jcpicker' ",
     "desc_3": "żeby utworzyć swój własny profil kolorów.",
     "backup": "Zrób kopię zapasową bieżącego profilu kolorów",
     "label": "Zmień kolor Joy-Conów",
@@ -114,7 +114,8 @@
     "download_firmware": "Pobierz firmware",
     "download_cheats": "Pobierz cheaty",
     "tools": "Narzędzia",
-    "launch_warning": "Zwróć uwagę na następujące punkty zanim skorzystasz z aplikacji:\n\n\ue016  Dowiedz się najpierw, jak ręcznie zaktualizować twojego Switcha. Pomoże ci to lepiej zrozumieć działanie aplikacji i będziesz wiedział co zrobić gdy coś pójdzie nie tak.\n\ue016  Pamiętaj, że używanie tej aplikacji (lub innych homebrew) na karcie SD z systemem plików exFAT nie jest zalecane, ponieważ ich zawartość ma większą podatność na uszkodzenia.\n\nTen ekran nie wyświetli się ponownie."
+    "launch_warning": "Zwróć uwagę na następujące punkty zanim skorzystasz z aplikacji:\n\n\ue016  Dowiedz się najpierw, jak ręcznie zaktualizować twojego Switcha. Pomoże ci to lepiej zrozumieć działanie aplikacji i będziesz wiedział co zrobić gdy coś pójdzie nie tak.\n\ue016  Należy pamiętać, że korzystanie z tej aplikacji na karcie SD z systemem plików exFAT jest SILNIE odradzane, ponieważ ich zawartość jest bardziej podatna na uszkodzenia.\n\n\ue016  Mogły zostać wprowadzone nowe funkcje i/lub zmiany obecnych funkcji. Rzuć na nie okiem w Narzędzia->Dziennik zmian.\n\nTen ekran nie wyświetli się ponownie.",
+    "footer_text" : "v{} | {:.1f}GB dostępne"
   },
   "hide": {
     "title": "Ukryj zakładki",
@@ -127,7 +128,7 @@
     "dl_payloads": "Pobierz payloady do ",
     "inject_payloads": "Wstrzyknij payload",
     "update_app": "Zaktualizuj aplikację (v",
-    "dl_app": "Pobieranie:\nKefir Updater\n\nZ:\n",
+    "dl_app": "Pobieranie:\nAIO-switch-updater\n\nZ:\n",
     "changelog": "Dziennik zmian",
     "clean_up": "Wyczyść pobrane pliki",
     "hide_tabs": "Ukryj zakładki",
@@ -135,7 +136,7 @@
     "browser": "Przeglądarka internetowa",
     "batch_copy": "Zbiorcza kopia plików",
     "batch_copy_not_found": "Poniższe pliki nie zostały znalezione i nie mogły zostać skopiowane:\n",
-    "batch_copy_config_not_found": "To narzędzie pozwala na kopiowanie plików do innych lokalizacji, z których może korzystać twój bootloader/trinket. Pobierz copy_files.json z 'https://git.io/aiosu_copy_files' i wrzuć go do twojego folderu z konfiguracją. Operacja zostanie również wykonana po aktualizacjach.",
+    "batch_copy_config_not_found": "To narzędzie pozwala na kopiowanie plików do innych lokalizacji, z których może korzystać twój bootloader/trinket. Pobierz copy_files.txt z 'https://git.io/aiosu_copyfiles' i wrzuć go do twojego folderu z konfiguracją. Operacja zostanie również wykonana po aktualizacjach.",
     "language": "Zmień język aplikacji"
   },
   "utils": {

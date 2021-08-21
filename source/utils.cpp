@@ -144,23 +144,32 @@ void extractArchive(archiveType type, const std::string& tag){
             brls::Application::quit();
             break;
         case archiveType::cfw:
-            if(isArchive(CFW_FILENAME)){
-                overwriteInis = showDialogBox("menus/utils/overwrite_inis"_i18n, "menus/common/no"_i18n, "menus/common/yes"_i18n);
-                extract::extract(CFW_FILENAME, ROOT_PATH, overwriteInis);
-            }
+            if(std::filesystem::exists(KEFIR_DIRECTORY_PATH))
+                    std::filesystem::remove_all(KEFIR_DIRECTORY_PATH);
+                std::filesystem::create_directory(KEFIR_DIRECTORY_PATH);
+                overwriteInis = 1;
+                extract::extract(CFW_FILENAME, KEFIR_DIRECTORY_PATH, overwriteInis);
+
+                if(std::filesystem::exists("/kefir/switch/kefir-updater/kefir-updater.bin")) {
+                    fs::copyFile("/kefir/switch/kefir-updater/kefir-updater.bin", "/payload.bin");
+                    fs::copyFile("/kefir/switch/kefir-updater/update.te", "/startup.te");
+                }
+
             else{
                 brls::Application::crash("menus/utils/wrong_type_cfw"_i18n);
             }
             break;
         case archiveType::ams_cfw:
-            if(isArchive(AMS_FILENAME)){
-                overwriteInis = showDialogBox("menus/utils/overwrite_inis"_i18n, "menus/common/no"_i18n, "menus/common/yes"_i18n);
-                usleep(800000);
-                int deleteContents = showDialogBox("menus/ams_update/delete_sysmodules_flags"_i18n, "menus/common/no"_i18n, "menus/common/yes"_i18n);
-                if(deleteContents == 1)
-                    removeSysmodulesFlags(AMS_CONTENTS);
-                extract::extract(AMS_FILENAME, ROOT_PATH, overwriteInis);
-            }
+            if(std::filesystem::exists(KEFIR_DIRECTORY_PATH))
+                    std::filesystem::remove_all(KEFIR_DIRECTORY_PATH);
+                std::filesystem::create_directory(KEFIR_DIRECTORY_PATH);
+                overwriteInis = 1;
+                extract::extract(CFW_FILENAME, KEFIR_DIRECTORY_PATH, overwriteInis);
+
+                if(std::filesystem::exists("/kefir/switch/kefir-updater/kefir-updater.bin")) {
+                    fs::copyFile("/kefir/switch/kefir-updater/kefir-updater.bin", "/payload.bin");
+                    fs::copyFile("/kefir/switch/kefir-updater/update.te", "/startup.te");
+                }
             break;
     }
     if(type == archiveType::ams_cfw || type == archiveType::cfw)

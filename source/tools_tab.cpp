@@ -112,16 +112,16 @@ ToolsTab::ToolsTab(const std::string& tag, bool erista, const nlohmann::json& hi
                 WebCommonReply out;
                 Result rc = webPageCreate(&conf, url.c_str());
                 if (R_FAILED(rc))
-                    error += "\uE016 Error starting Browser\n\uE016 Lookup error code for more info " + rc;
+                    error += "\uE016 Не могу запустить браузер.\n\uE016 Код ошибки: " + rc;
                 webConfigSetJsExtension(&conf, true);
                 webConfigSetPageCache(&conf, true);
                 webConfigSetBootLoadingIcon(&conf, true);
                 webConfigSetWhitelist(&conf, ".*");
                 rc = webConfigShow(&conf, &out);
                 if (R_FAILED(rc))
-                    error += "\uE016 Error starting Browser\n\uE016 Lookup error code for more info " + rc;
+                    error += "\uE016 Не могу запустить браузер.\n\uE016 Код ошибки: " + rc;
             } else { // Running under applet
-                error += "\uE016 Running in applet mode/through a forwarder.\n\uE016 Please launch hbmenu by holding [R] on a game";
+                error += "Эта функция не доступна в режиме апплета (через альбомы).\nПожалуйста перезапустите программу в режиме тайтла (через форвардер или игру), чтобы воспользоваться ей.";
             }
             if(!error.empty()){
                 brls::Dialog* dialog = new brls::Dialog(error);
@@ -181,18 +181,8 @@ ToolsTab::ToolsTab(const std::string& tag, bool erista, const nlohmann::json& hi
     language = new brls::ListItem("menus/tools/language"_i18n);
     language->getClickEvent()->subscribe([&](brls::View* view){
         std::vector<std::pair<std::string, std::string>> languages{
-            std::make_pair("menus/language/en-US"_i18n, "en-US"),
-            std::make_pair("menus/language/ja"_i18n, "ja"),
-            std::make_pair("menus/language/fr"_i18n, "fr"),
-            std::make_pair("menus/language/de"_i18n, "de"),
-            std::make_pair("menus/language/it"_i18n, "it"),
-            std::make_pair("menus/language/es"_i18n, "es"),
-            std::make_pair("menus/language/pl"_i18n, "pl"),
-            std::make_pair("menus/language/zh-CN"_i18n, "zh-CN"),
-            std::make_pair("menus/language/zh-TW"_i18n, "zh-TW"),
-            std::make_pair("menus/language/es-419"_i18n, "es-419"),
-            std::make_pair("menus/language/zh-Hant"_i18n, "zh-Hant"),
-            std::make_pair("menus/language/zh-Hans"_i18n, "zh-Hans")
+            std::make_pair("menus/language/ru"_i18n, "ru"),
+            std::make_pair("menus/language/en-US"_i18n, "en-US")
         };
         brls::AppletFrame* appView = new brls::AppletFrame(true, true);
         brls::List* list = new brls::List();
@@ -244,6 +234,7 @@ ToolsTab::ToolsTab(const std::string& tag, bool erista, const nlohmann::json& hi
     if(!util::getBoolValue(hideStatus, "cleanup")) this->addView(cleanUp);
     if(!util::getBoolValue(hideStatus, "language")) this->addView(language);
     if(!util::getBoolValue(hideStatus, "hidetabs")) this->addView(hideTabs);
-    this->addView(changelog);
+
+    // this->addView(changelog);
 }
 

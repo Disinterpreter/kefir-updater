@@ -18,7 +18,8 @@
     "delete_all": "Удалить все читы",
     "deleting": "Удаление...",
     "cheastlips_title": "Читы с сайта CheatSlips.com",
-    "get_cheatslips": "Скачать читы с сайта CheatSlips.com",
+    "get_cheatslips": "Скачать читы с CheatSlips.com",
+    "get_gbatemp": "Скачать читы с GBAtemp.net",
     "cheatslips_label": "\ue016  Зайти на CheatSlips.com и скачать читы для установленных игр.",
     "cheatslips_dl": "Скачать выбранные читы с сайта CheatSlips.com.\nСкачанные читы будут добавлены к существующему чит-файлу.",
     "delete_file": "Удалить существующий чит-файл",
@@ -34,7 +35,8 @@
     "exclude_titles": "Список установленных игр",
     "exclude_titles_desc": "Вы можете отключить обновление читов для игр из списка ниже ('On' - обновлять читы, 'Off' - не обновлять)",
     "exclude_titles_save": "Сохранить изменения и вернуться",
-    "dl_all": "Скачать и распаковать весь архив с читами с сайта gbatemp"
+    "dl_all": "Скачать и распаковать весь архив с читами с GBAtemp.net",
+    "cheats_label": "\ue016  Скачать читы для конкретной игры с сайта GBAtemp.net или CheatSlips.com"
   },
   "common": {
     "downloading": "Загрузка...",
@@ -52,7 +54,8 @@
     "yes": "Да",
     "go_back": "Вернуться",
     "confirm": "Подтвердить",
-    "cancel": "Отмена"
+    "cancel": "Отмена",
+    "applet_mode_not_supported": "Эта функция не доступна в режиме апплета (через альбомы). Пожалуйста перезапустите программу в режиме тайтла (через форвардер или игру), чтобы воспользоваться ей."
   },
   "changelog": {
     "changelog": "Изменения"
@@ -91,7 +94,7 @@
   },
   "main": {
     "getting": "Загрузка ",
-    "firmware_text": "\ue016  Дамп прошивки взят с 'https://darthsternie.net/switch-firmwares/'. После загрузки, прошивка будет распакована в папку '/firmware'. Распакованную прошивку можно установить с помощью Daybreak.\nВНИМАНИЕ! Используйте запуск в режиме тайтла (через игру или форвардер, для работы этой функции)\n\n\ue016  Текущая версия прошивки: ",
+    "firmware_text": "\ue016  Дамп прошивки взят с 'https://darthsternie.net/switch-firmwares/'. После загрузки, прошивка будет распакована в папку '/firmware'. Распакованную прошивку можно установить с помощью Daybreak.\n\n\ue016  Текущая версия прошивки: ",
     "cheats_text": "\uE016  Загрузка обновлений читов с сайта 'gbatemp.net'. Читы для игр, которые у вас не установлены не будут распаковываться на карту памяти. Вы можете отключить обновления читов для определённых игр через меню 'Инструменты -> Управление читами'.\n\uE016  Для акивации читов, удерживайте кнопку (L) во время запуска игры!\n\n\uE016  Текущая версия читов: ",
     "get_cheats": "Скачать архив читов с сайта GBAtemp.net (v",
     "sigpatches": "sigpatches",
@@ -106,16 +109,16 @@
     "cfw_text": "\ue016  Update Kefir to the latest version.",
     "cheats": "читов",
     "links_not_found": "Could not find a download link, make sure the Switch has access to the internet.\nIf this problem persists, please open an issue on Github.",
-    "new_update": " - New app update available",
+    "new_update": " - доступна новая версия апдейтера",
     "about": "О программе",
-    "update_ams": "Update Atmosph\u00e8re",
+    "update_ams": "Обновить Kefir",
     "update_cfw": "Обновить Kefir",
     "update_sigpatches": "Update sigpatches",
     "download_firmware": "Скачать прошивку",
     "download_cheats": "Скачать читы",
     "tools": "Инструменты",
     "launch_warning": "Перед тем как пользоваться программой прочтите следующие замечания::\n\n\ue016  Перед использованием программы ознакомьтесь со способами обновления Kefir вручную. Это поможет вам лучше понимать что делать, если что-то пойдёт не так.\n\ue016  Не рекомендуется использовать карты в формате exFAT на Nintendo Switch! Используйте FAT32, если не хотите потерять ваши данные!\n\ue016  Внимательно прочитайте замечания к релизу Kefir на его официальной странице: kefir.customfw.xyz\n\nЭто сообщение не будет показано при следующих запусках программы.",
-    "GB_available": "Гб доступно на карте памяти"
+    "footer_text" : "v{} | {:.1f} Гб свободно"
   },
   "hide": {
     "title": "Hide tabs",
@@ -160,22 +163,6 @@
   "language": {
     "system_default": "System default",
     "en-US": "American English (en-US)",
-    "ja": "Japanese (ja)",
-    "fr": "French (fr)",
-    "de": "German (de)",
-    "it": "Italian (it)",
-    "es": "Spanish (es)",
-    "zh-CN": "Simplified Chinese (zh-CN)",
-    "ko": "Korean (ko)",
-    "nl": "Dutch (nl)",
-    "pt": "Portuguese (pt)",
-    "ru": "Russian (ru)",
-    "pl": "Polish (pl)",
-    "zh-TW": "Traditional Chinese (zh-TW)",
-    "en-GB": "British English (en-GB)",
-    "fr-CA": "Canadian French (fr-CA)",
-    "es-419": "Latin American Spanish (es-419)",
-    "zh-Hant": "Traditional Chinese (zh-Hant)",
-    "zh-Hans": "Simplified Chinese (zh-Hans)"
+    "ru": "Russian (ru)"
   }
 }
