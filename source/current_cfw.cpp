@@ -1,6 +1,5 @@
 #include "current_cfw.hpp"
 #include <switch.h>
-#include "fs.hpp"
 
 namespace CurrentCfw {
 
@@ -56,15 +55,12 @@ namespace CurrentCfw {
     std::string getAmsInfo() {
         u64 version;
         std::string res;
-        std::string kefir_version = fs::readLine("/switch/kefirupdater/version");
-
         if(R_SUCCEEDED(splGetConfig((SplConfigItem) 65000, &version))) {
-            res +=  kefir_version + ";\n\ue016  Armosphere: " + std::to_string((version >> 56) & ((1 << 8) - 1)) + "." +
+            res +=  std::to_string((version >> 56) & ((1 << 8) - 1)) + "." +
                     std::to_string((version >> 48) & ((1 << 8) - 1)) + "." +
                     std::to_string((version >> 40) & ((1 << 8) - 1));
             if(R_SUCCEEDED(splGetConfig((SplConfigItem) 65007, &version)))
                 res += version ? "|E" : "|S";
-                res += ";";
             return res;
         }
         else

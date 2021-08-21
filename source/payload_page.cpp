@@ -1,6 +1,5 @@
 #include "payload_page.hpp"
 #include "utils.hpp"
-#include "reboot_payload.h"
 #include "current_cfw.hpp"
 #include "utils.hpp"
 #include "fs.hpp"
@@ -23,13 +22,13 @@ PayloadPage::PayloadPage() : AppletFrame(true, true)
         std::string payload_path = payload;
         listItem = new brls::ListItem(payload_path);
         listItem->getClickEvent()->subscribe([&, payload](brls::View* view) {
-            reboot_to_payload(payload.c_str());
+            util::rebootToPayload(payload);
             brls::Application::popView();
         });
         if(CurrentCfw::running_cfw == CFW::ams){
             listItem->registerAction("menus/payloads/set_reboot_payload"_i18n, brls::Key::X, [this, payload_path] { 
                 std::string res1;
-                if(fs::copyFile(payload_path.c_str(), REBOOT_PAYLOAD_PATH)){
+                if(fs::copyFile(payload_path, REBOOT_PAYLOAD_PATH)){
                     res1 += "menus/payloads/copy_success"_i18n + payload_path + "menus/payloads/to"_i18n + std::string(REBOOT_PAYLOAD_PATH) + "'.";
                     
                 }
@@ -48,7 +47,7 @@ PayloadPage::PayloadPage() : AppletFrame(true, true)
         }
         listItem->registerAction("menus/payloads/set_update_bin"_i18n, brls::Key::Y, [this, payload] { 
                 std::string res2;
-                if(fs::copyFile(payload.c_str(), UPDATE_BIN_PATH)){
+                if(fs::copyFile(payload, UPDATE_BIN_PATH)){
                     res2 += "menus/payloads/copy_success"_i18n + payload + "menus/payloads/to"_i18n + std::string(UPDATE_BIN_PATH) + "'.";
                 }
                 else{
@@ -74,7 +73,7 @@ PayloadPage::PayloadPage() : AppletFrame(true, true)
     });
     list->addView(shutDown);
 
-    reboot = new brls::ListItem("menus/payloads/reboot"_i18n);
+    reboot = new brls::ListItem("menus/common/reboot"_i18n);
     reboot->getClickEvent()->subscribe([](brls::View* view) {
         util::shutDown(true);
         brls::Application::popView();

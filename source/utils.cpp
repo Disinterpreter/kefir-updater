@@ -1,63 +1,62 @@
 #include "utils.hpp"
 #include "fs.hpp"
 #include "current_cfw.hpp"
-#include <switch.h>
 #include "download.hpp"
 #include "extract.hpp"
 #include "progress_event.hpp"
 #include "main_frame.hpp"
+#include "reboot_payload.h"
+#include "unistd.h"
+#include "progress_event.hpp"
+#include <switch.h>
 #include <filesystem>
 #include <fstream>
-#include "reboot_payload.h"
 
 namespace i18n = brls::i18n;
 using namespace i18n::literals;
 
 namespace util {
 
-bool isArchive(const char * path){
+bool isArchive(const std::string&  path){
     std::fstream file;
     std::string fileContent;
     if(std::filesystem::exists(path)){
         file.open(path, std::fstream::in);
         file >> fileContent;
-        file.close();
     }
     return fileContent.find("DOCTYPE") == std::string::npos;
 }
 
-void downloadArchive(std::string url, archiveType type){
-    fs::createTree(DOWNLOAD_PATH);
-    AppletType at;
-    switch(type){
-        case archiveType::sigpatches:
-            download::downloadFile(url.c_str(), SIGPATCHES_FILENAME, OFF);
-            break;
-        case archiveType::cheats:
-            download::downloadFile(url.c_str(), CHEATS_FILENAME, OFF);
-            break;
-        case archiveType::fw:
-            at = appletGetAppletType();
-            if (at == AppletType_Application || at == AppletType_SystemApplication) {
-                download::downloadFile(url.c_str(), FIRMWARE_FILENAME, OFF);
-            }
-            else{
-                brls::Application::crash("menus/utils/fw_warning"_i18n);
-            }
-            break;
-        case archiveType::app:
-            download::downloadFile(url.c_str(), APP_FILENAME, OFF);
-            break;
-        case archiveType::cfw:
-            download::downloadFile(url.c_str(), CFW_FILENAME, OFF);
-            break;
-        case archiveType::ams_cfw:
-            download::downloadFile(url.c_str(), AMS_FILENAME, OFF);
-    }
+void downloadArchive(const std::string& url, archiveType type) {
+    long status_code;
+    downloadArchive(url, type, status_code);
 }
 
+void downloadArchive(const std::string& url, archiveType type, long& status_code) {
+    fs::createTree(DOWNLOAD_PATH);
+    switch(type){
+        case archiveType::sigpatches:
+            status_code = download::downloadFile(url, SIGPATCHES_FILENAME, OFF);
+            break;
+        case archiveType::cheats:
+            status_code = download::downloadFile(url, CHEATS_FILENAME, OFF);
+            break;
+        case archiveType::fw:
+            status_code = download::downloadFile(url, FIRMWARE_FILENAME, OFF);
+            break;
+        case archiveType::app:
+            status_code = download::downloadFile(url, APP_FILENAME, OFF);
+            break;
+        case archiveType::cfw:
+            status_code = download::downloadFile(url, CFW_FILENAME, OFF);
+            break;
+        case archiveType::ams_cfw:
+            status_code = download::downloadFile(url, AMS_FILENAME, OFF);
+    }
+    ProgressEvent::instance().setStatusCode(status_code);
+}
 
-int showDialogBox(std::string text, std::string opt){
+int showDialogBox(const std::string& text, const std::string& opt){
     int dialogResult = -1;
     int result = -1;
     brls::Dialog* dialog = new brls::Dialog(text);
@@ -75,7 +74,7 @@ int showDialogBox(std::string text, std::string opt){
     return result;
 }
 
-int showDialogBox(std::string text, std::string opt1, std::string opt2){
+int showDialogBox(const std::string& text, const std::string& opt1, const std::string& opt2){
     int dialogResult = -1;
     int result = -1;
     brls::Dialog* dialog = new brls::Dialog(text);
@@ -98,17 +97,13 @@ int showDialogBox(std::string text, std::string opt1, std::string opt2){
     return result;
 }
 
-void extractArchive(archiveType type, std::string tag){
+void extractArchive(archiveType type, const std::string& tag){
     int overwriteInis = 0;
-    std::vector<std::string> titles;
-    std::string nroPath ="sdmc:" + std::string(APP_PATH);
     chdir(ROOT_PATH);
     switch(type){
         case archiveType::sigpatches:
             if(isArchive(SIGPATCHES_FILENAME)) {
-                /* std::string backup(HEKATE_IPL_PATH);
-                backup += ".old"; */
-                if(std::filesystem::exists(HEKATE_IPL_PATH)){
+                /* if(std::filesystem::exists(HEKATE_IPL_PATH)){
                     overwriteInis = showDialogBox("menus/utils/overwrite"_i18n + std::string(HEKATE_IPL_PATH) +"?", "menus/common/no"_i18n, "menus/common/yes"_i18n);
                     if(overwriteInis == 0){
                         extract::extract(SIGPATCHES_FILENAME, ROOT_PATH, HEKATE_IPL_PATH);
@@ -116,20 +111,21 @@ void extractArchive(archiveType type, std::string tag){
                     else{
                         extract::extract(SIGPATCHES_FILENAME);
                     }
-                }
-                else{
+                } */
+                //else{
                     extract::extract(SIGPATCHES_FILENAME);
-                }
+                //}
             }
             else{
                 brls::Application::crash("menus/utils/wrong_type_sigpatches"_i18n);
             }
             break;
-        case archiveType::cheats: 
-            titles = extract::getInstalledTitlesNs();
+        case archiveType::cheats: {
+            std::vector<std::string> titles = extract::getInstalledTitlesNs();
             titles = extract::excludeTitles(CHEATS_EXCLUDE, titles);
             extract::extractCheats(CHEATS_FILENAME, titles, CurrentCfw::running_cfw);
             break;
+        }
         case archiveType::fw:
             if(std::filesystem::file_size(FIRMWARE_FILENAME) < 200000){
                 brls::Application::crash("menus/utils/wrong_type_sigpatches_downloaded"_i18n);
@@ -149,15 +145,8 @@ void extractArchive(archiveType type, std::string tag){
             break;
         case archiveType::cfw:
             if(isArchive(CFW_FILENAME)){
-                if(std::filesystem::exists(KEFIR_DIRECTORY_PATH))
-                    std::filesystem::remove_all(KEFIR_DIRECTORY_PATH);
-                std::filesystem::create_directory(KEFIR_DIRECTORY_PATH);
-                overwriteInis = 1;
-                extract::extract(CFW_FILENAME, KEFIR_DIRECTORY_PATH, overwriteInis);
-
-                if(std::filesystem::exists("/kefir/switch/kefirupdater/kefir-updater.bin")) {
-                    fs::copyFile("/kefir/switch/kefirupdater/kefir-updater.bin", "/payload.bin");
-                } 
+                overwriteInis = showDialogBox("menus/utils/overwrite_inis"_i18n, "menus/common/no"_i18n, "menus/common/yes"_i18n);
+                extract::extract(CFW_FILENAME, ROOT_PATH, overwriteInis);
             }
             else{
                 brls::Application::crash("menus/utils/wrong_type_cfw"_i18n);
@@ -174,8 +163,8 @@ void extractArchive(archiveType type, std::string tag){
             }
             break;
     }
-    if(std::filesystem::exists(COPY_FILES_JSON))
-        fs::copyFiles(COPY_FILES_JSON);
+    if(type == archiveType::ams_cfw || type == archiveType::cfw)
+        fs::copyFiles(COPY_FILES_TXT);
 }
 
 std::string formatListItemTitle(const std::string &str, size_t maxScore) {
@@ -216,28 +205,36 @@ std::vector<std::string> fetchPayloads(){
 }
 
 void shutDown(bool reboot){
-    bpcInitialize();
-    if(reboot) bpcRebootSystem();
-    else bpcShutdownSystem();
-    bpcExit();
+    spsmInitialize();
+    spsmShutdown(reboot);
 }
 
-std::string getLatestTag(const char *url){
-    nlohmann::json tag = download::getRequest(url, {"accept: application/vnd.github.v3+json"});
+void rebootToPayload(const std::string& path) {
+    reboot_to_payload(path.c_str(), CurrentCfw::running_cfw != CFW::ams);
+}
+
+std::string getLatestTag(const std::string& url) {
+    nlohmann::ordered_json tag;
+    download::getRequest(url, tag, {"accept: application/vnd.github.v3+json"});
     if(tag.find("tag_name") != tag.end())
         return tag["tag_name"];
     else
         return "";
 }
 
-void saveVersion(std::string version, const char* path){
-    std::fstream newVersion;
-    newVersion.open(path, std::fstream::out | std::fstream::trunc);
-    newVersion << version << std::endl;
-    newVersion.close();
+std::string downloadFileToString(const std::string& url) {
+    std::vector<uint8_t> bytes;
+    download::downloadFile(url, bytes);
+    std::string str(bytes.begin(), bytes.end());
+    return str;
 }
 
-std::string readVersion(const char* path){
+void saveVersion(const std::string& version, const std::string& path){
+    std::ofstream newVersion(path);
+    newVersion << version << std::endl;
+}
+
+std::string readVersion(const std::string& path){
     std::fstream versionFile;
     std::string version = "0";
     if(std::filesystem::exists(path)){
@@ -249,33 +246,88 @@ std::string readVersion(const char* path){
 }
 
 bool isErista() {
-    u64 hwType;
-    Result rc = splGetConfig(SplConfigItem_HardwareType, &hwType);
+    SetSysProductModel model;
+    setsysGetProductModel(&model);
+    return (model == SetSysProductModel_Nx || model == SetSysProductModel_Copper);
+}
 
-    if(R_FAILED(rc))
-        return true;
-
-    switch (hwType)
-    {
-        case 0:
-        case 1:
-            return true;
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-            return false;
-        default:
-            return true;
-    }
-};
-
-void removeSysmodulesFlags(const char * directory) {
+void removeSysmodulesFlags(const std::string&  directory) {
     for (const auto & e : std::filesystem::recursive_directory_iterator(directory)) {
         if(e.path().string().find("boot2.flag") != std::string::npos) {
                 std::filesystem::remove(e.path());
         }
     }
+}
+
+std::string lowerCase(const std::string& str) {
+    std::string res = str;
+    std::for_each(res.begin(), res.end(), [](char & c){
+        c = std::tolower(c);
+    });
+    return res;
+}
+
+std::string upperCase(const std::string& str) {
+    std::string res = str;
+    std::for_each(res.begin(), res.end(), [](char & c){
+        c = std::toupper(c);
+    });
+    return res;
+}
+
+std::string getErrorMessage(long status_code) {
+    std::string res;
+    switch(status_code) {
+        case 500:
+            res = fmt::format("{0:}: Internal Server Error", status_code);
+            break;
+        case 503: 
+            res = fmt::format("{0:}: Service Temporarily Unavailable", status_code);
+            break;
+        default:
+            res = fmt::format("error: {0:}", status_code);
+            break;
+    }
+    return res;
+}
+
+bool isApplet() {
+    AppletType at = appletGetAppletType();
+    return at != AppletType_Application && at != AppletType_SystemApplication;
+}
+
+std::set<std::string> getExistingCheatsTids() {
+    std::string path = getContentsPath();
+    std::set<std::string> res;
+    for(const auto& entry : std::filesystem::directory_iterator(path)) {
+        std::string cheatsPath =  entry.path().string() + "/cheats";
+        if(std::filesystem::exists(cheatsPath)){
+            res.insert(util::upperCase(cheatsPath.substr(cheatsPath.length() - 7 - 16, 16)));
+        }
+    }
+    return res;
+}
+
+std::string getContentsPath() {
+    std::string path;
+    switch(CurrentCfw::running_cfw){
+        case CFW::ams:
+            path = std::string(AMS_PATH) + std::string(CONTENTS_PATH);
+            break;
+        case CFW::rnx:
+            path = std::string(REINX_PATH) + std::string(CONTENTS_PATH);
+            break;
+        case CFW::sxos:
+            path = std::string(SXOS_PATH) + std::string(TITLES_PATH);
+            break;
+    }
+    return path;
+}
+
+bool getBoolValue(const nlohmann::json& jsonFile, const std::string& key) {
+    /* try { return jsonFile.at(key); }
+    catch (nlohmann::json::out_of_range& e) { return false; } */
+    return (jsonFile.find(key) != jsonFile.end()) ? jsonFile.at(key).get<bool>() : false;
 }
 
 }

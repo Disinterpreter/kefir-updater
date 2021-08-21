@@ -19,13 +19,13 @@ CheatsPage::CheatsPage() : AppletFrame(true, true)
 
     view = new brls::ListItem("menus/cheats/view"_i18n);
     view->getClickEvent()->subscribe([&](brls::View* view){
-        brls::Application::pushView(new AppPage());
+        brls::Application::pushView(new AppPage_DownloadedCheats());
     });
     list->addView(view);
 
     exclude = new brls::ListItem("menus/cheats/exclude"_i18n);
     exclude->getClickEvent()->subscribe([&](brls::View* view){
-        brls::Application::pushView(new ExcludePage());
+        brls::Application::pushView(new AppPage_Exclude());
     });
     list->addView(exclude);
  
@@ -34,7 +34,7 @@ CheatsPage::CheatsPage() : AppletFrame(true, true)
         stagedFrame = new brls::StagedAppletFrame();
         stagedFrame->setTitle("menus/cheats/delete_all"_i18n);
         stagedFrame->addStage(
-            new WorkerPage(stagedFrame, "menus/cheats/deleting"_i18n, [](){extract::removeCheats(CurrentCfw::running_cfw);})
+            new WorkerPage(stagedFrame, "menus/cheats/deleting"_i18n, [](){extract::removeCheats();})
         );
         stagedFrame->addStage(
             new ConfirmPage(stagedFrame, "menus/common/all_done"_i18n, true)
@@ -43,13 +43,22 @@ CheatsPage::CheatsPage() : AppletFrame(true, true)
     });
     list->addView(deleteCheats);
 
-    auto cheatsVerVec = download::downloadFile(CHEATS_URL_VERSION);
-    std::string cheatsVer(cheatsVerVec.begin(), cheatsVerVec.end());
+    std::string cheatsVer = util::downloadFileToString(CHEATS_URL_VERSION);
     if(cheatsVer != "") {
         dlAll = new brls::ListItem("menus/cheats/dl_all"_i18n);
         dlAll->getClickEvent()->subscribe([&, cheatsVer](brls::View* view) {
             std::string url;
-            url = CHEATS_URL_CONTENTS;
+            switch(CurrentCfw::running_cfw){
+                case CFW::sxos:
+                    url = CHEATS_URL_TITLES;
+                    break;
+                case CFW::ams:
+                    url = CHEATS_URL_CONTENTS;
+                    break;
+                case CFW::rnx:
+                    url = CHEATS_URL_CONTENTS;
+                    break;
+            }
             std::string text("menus/main/get_cheats"_i18n + cheatsVer + ")" + "menus/common/from"_i18n + url);
             brls::StagedAppletFrame* stagedFrame = new brls::StagedAppletFrame();
             stagedFrame->setTitle("menus/cheats/dl_all"_i18n);

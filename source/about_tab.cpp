@@ -8,7 +8,7 @@ AboutTab::AboutTab()
 {
     // Subtitle
     brls::Label *subTitle = new brls::Label(
-        brls::LabelStyle::MEDIUM,
+        brls::LabelStyle::REGULAR,
         "menus/about/title"_i18n, 
         true
     );

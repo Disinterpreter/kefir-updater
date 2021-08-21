@@ -13,7 +13,7 @@ using json = nlohmann::json;
 
 namespace ColorSwapper {
 
-    int hexToBGR(std::string hex){
+    int hexToBGR(const std::string& hex){
         std::string R = hex.substr(0, 2);
         std::string G = hex.substr(2, 2);
         std::string B = hex.substr(4, 2);
@@ -27,7 +27,7 @@ namespace ColorSwapper {
         return ss.str();
     }
 
-    bool isHexaAnd3Bytes(std::string str){
+    bool isHexaAnd3Bytes(const std::string& str){
         if(str.size()!=6) return false;
         for(char const &c : str){
             if(!isxdigit(c)) return false;
@@ -39,7 +39,7 @@ namespace ColorSwapper {
 
 namespace JC {
 
-    int setColor(std::vector<int> colors){
+    int setColor(const std::vector<int>& colors){
         Result pads, ljc, rjc;
         int res = 0;
         s32 nbEntries;
@@ -58,7 +58,7 @@ namespace JC {
         return res;
     }
 
-    int backupToJSON(json &profiles, const char* path){
+    int backupToJSON(json &profiles, const std::string& path){
         HidNpadControllerColor color_left;
         HidNpadControllerColor color_right;
         Result res = hidGetNpadControllerColorSplit(HidNpadIdType_Handheld, &color_left, &color_right);
@@ -108,7 +108,7 @@ namespace JC {
 
     }
 
-    std::vector<std::pair<std::string, std::vector<int>>> getProfiles(const char* path){
+    std::vector<std::pair<std::string, std::vector<int>>> getProfiles(const std::string& path){
         std::vector<std::pair<std::string, std::vector<int>>> res;
         bool properData;
         std::fstream profilesFile;
@@ -149,7 +149,7 @@ namespace JC {
         return res;
     }
 
-    void changeJCColor(std::vector<int> values){
+    void changeJCColor(const std::vector<int>& values){
         hiddbgInitialize();
         hidsysInitialize();
         ProgressEvent::instance().reset();
@@ -163,7 +163,7 @@ namespace JC {
         ProgressEvent::instance().setStep(ProgressEvent::instance().getMax());
     }
 
-    void backupJCColor(const char* path){
+    void backupJCColor(const std::string& path){
         hiddbgInitialize();
         hidsysInitialize();
         ProgressEvent::instance().reset();
@@ -205,7 +205,7 @@ namespace JC {
 
 namespace PC {
 
-    int setColor(std::vector<int> colors){
+    int setColor(const std::vector<int>& colors){
         Result pads, pc;
         int res = 0;
         s32 nbEntries;
@@ -222,7 +222,7 @@ namespace PC {
         return res;
     }
 
-    int backupToJSON(json &profiles, const char* path){
+    int backupToJSON(json &profiles, const std::string& path){
         HidNpadControllerColor color;
         Result res = hidGetNpadControllerColorSingle(HidNpadIdType_No1, &color);
         std::vector<int> oldBackups;
@@ -266,7 +266,7 @@ namespace PC {
 
     }
 
-    std::vector<std::pair<std::string, std::vector<int>>> getProfiles(const char* path){
+    std::vector<std::pair<std::string, std::vector<int>>> getProfiles(const std::string& path){
         std::vector<std::pair<std::string, std::vector<int>>> res;
         bool properData;
         std::fstream profilesFile;
@@ -301,21 +301,21 @@ namespace PC {
         return res;
     }
 
-    void changePCColor(std::vector<int> values){
+    void changePCColor(const std::vector<int>& values){
         hiddbgInitialize();
         hidsysInitialize();
         ProgressEvent::instance().reset();
         ProgressEvent::instance().setStep(1);
         int res = setColor(values);
         if(res != 0){
-            util::showDialogBox("Could not change the Pro-Con color. Make they're connected to P1. This feature may not work on unoffical controllers. \nError :" + std::to_string(res), "Ok");
+            util::showDialogBox("Could not change the Pro-Con color. Make they're connected to P1. This feature may not work on unofficial controllers. \nError :" + std::to_string(res), "Ok");
         }
         hiddbgExit();
         hidsysExit();
         ProgressEvent::instance().setStep(ProgressEvent::instance().getMax());
     }
 
-    void backupPCColor(const char* path){
+    void backupPCColor(const std::string& path){
         hiddbgInitialize();
         hidsysInitialize();
         ProgressEvent::instance().reset();

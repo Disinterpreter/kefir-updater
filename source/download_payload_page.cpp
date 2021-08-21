@@ -28,15 +28,15 @@ DownloadPayloadPage::DownloadPayloadPage() : AppletFrame(true, true)
             listItem->getClickEvent()->subscribe([&, text, url, path](brls::View* view) {
                 fs::createTree(BOOTLOADER_PL_PATH);
                 brls::StagedAppletFrame* stagedFrame = new brls::StagedAppletFrame();
-                stagedFrame->setTitle("menus/getting_paylaod"_i18n);
+                stagedFrame->setTitle("menus/tools/getting_payload"_i18n);
                 stagedFrame->addStage(
                     new ConfirmPage(stagedFrame, text)
                 );
                 stagedFrame->addStage(
-                    new WorkerPage(stagedFrame, "menus/common/downloading"_i18n, [url, path](){download::downloadFile(url.c_str(), path.c_str(), OFF);})
+                    new WorkerPage(stagedFrame, "menus/common/downloading"_i18n, [url, path](){ download::downloadFile(url, path.c_str(), OFF); })
                 );
                 stagedFrame->addStage(
-                    new ConfirmPage(stagedFrame, "menus/common/downloadingload_all_done"_i18n, true)
+                    new ConfirmPage(stagedFrame, "menus/common/all_done"_i18n, true)
                 );
                 brls::Application::pushView(stagedFrame);
             });

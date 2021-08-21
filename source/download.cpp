@@ -1,16 +1,18 @@
 #include "download.hpp"
 #include "utils.hpp"
+#include "progress_event.hpp"
+#include "fs.hpp"
+#include <switch.h>
 #include <algorithm>
 #include <time.h>
 #include <math.h>
 #include <curl/curl.h>
 #include <chrono>
-
 #include <string>
 #include <regex>
-#include <switch.h>
 
-#include "progress_event.hpp"
+namespace i18n = brls::i18n;
+using namespace i18n::literals;
 
 constexpr const char API_AGENT[] =  "HamletDuFromage";
 constexpr int _1MiB =               0x100000;
@@ -98,15 +100,42 @@ namespace download {
             return realsize;
         }
 
+        bool checkSize(CURL* curl, const std::string& url) {
+            curl_off_t dl;
+            curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+            curl_easy_setopt(curl, CURLOPT_USERAGENT, API_AGENT);
+            curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+            curl_easy_setopt(curl, CURLOPT_NOBODY, 1L);
+            curl_easy_perform(curl);
+            auto res = curl_easy_getinfo(curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD_T, &dl);
+            if(!res) {
+                s64 freeStorage;
+                if(R_SUCCEEDED(fs::getFreeStorageSD(freeStorage)) && dl * 1.1 > freeStorage) {
+                    return false;
+                }
+            }
+            return true;
+        }
     }
 
-std::vector<std::uint8_t> downloadFile(const char *url, const char *output, int api)
+long downloadFile(const std::string& url, const char* output, int api)
+{
+    std::vector<std::uint8_t> dummy;
+    return downloadFile(url, dummy, output, api);
+}
+
+long downloadFile(const std::string& url, std::vector<std::uint8_t>& res, const char* output, int api)
 {
     ProgressEvent::instance().reset();
     CURL *curl = curl_easy_init();
     ntwrk_struct_t chunk = {0};
+    long status_code;
     time_old = std::chrono::steady_clock::now();
     dlold = 0.0f;
+    bool can_download = true;
+
     if (curl)
     {
         FILE *fp = fopen(output, "wb");
@@ -116,45 +145,55 @@ std::vector<std::uint8_t> downloadFile(const char *url, const char *output, int 
             chunk.data_size = _1MiB;
             chunk.out = fp;
 
-            curl_easy_setopt(curl, CURLOPT_URL, url);
-            curl_easy_setopt(curl, CURLOPT_USERAGENT, API_AGENT);
-            curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
-            curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
-
-            // write calls
-            curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
-            curl_easy_setopt(curl, CURLOPT_WRITEDATA, &chunk);
-
-            if (api == OFF)
-            {
-                curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
-                curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, download_progress);
+            if(*output != 0) {
+                can_download = checkSize(curl, url);
             }
-            curl_easy_perform(curl);
-            if (fp && chunk.offset)
-              fwrite(chunk.data, 1, chunk.offset, fp);
 
-            curl_easy_cleanup(curl);
-            ProgressEvent::instance().setStep(ProgressEvent::instance().getMax());
+            if(can_download) {
+                curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+                curl_easy_setopt(curl, CURLOPT_USERAGENT, API_AGENT);
+                curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+                curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
+                curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 0L);
+                curl_easy_setopt(curl, CURLOPT_NOBODY, 0L);
+                curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+                curl_easy_setopt(curl, CURLOPT_WRITEDATA, &chunk);
+
+                if (api == OFF)
+                {
+                    curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
+                    curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, download_progress);
+                }
+                curl_easy_perform(curl);
+                curl_easy_getinfo (curl, CURLINFO_RESPONSE_CODE, &status_code);
+
+                if (fp && chunk.offset && can_download)
+                    fwrite(chunk.data, 1, chunk.offset, fp);
+
+                curl_easy_cleanup(curl);
+                ProgressEvent::instance().setStep(ProgressEvent::instance().getMax());
+            }
         }
     }
 
-    if (*output == 0) {
-        std::vector<std::uint8_t> res(chunk.data, chunk.data + chunk.offset);
-        free(chunk.data);
-        fclose(chunk.out);
-        return res;
-    }
-    else {
-        free(chunk.data);
-        fclose(chunk.out);
-        return (std::vector<std::uint8_t>){};
+    fclose(chunk.out);
+    if(!can_download) {
+        brls::Application::crash("menus/errors/insufficient_storage"_i18n);
+        usleep(2000000);
+        brls::Application::quit();
+        res = {};
     }
 
+    if (*output == 0) {
+        res.assign(chunk.data, chunk.data + chunk.offset);
+    }
+
+    free(chunk.data);
+
+    return status_code;
 }
 
-std::string fetchTitle(const char *url){
+std::string fetchTitle(const std::string& url){
     CURL *curl_handle; 
     struct MemoryStruct chunk;
  
@@ -189,18 +228,18 @@ std::string fetchTitle(const char *url){
     return ver;
 }
 
-std::string downloadPage(const char* url, std::vector<std::string> headers, std::string body){
-    std::string res;
+long downloadPage(const std::string& url, std::string& res, const std::vector<std::string>& headers, const std::string& body){
     CURL *curl_handle; 
     struct MemoryStruct chunk;
     struct curl_slist *list = NULL;
- 
+    long status_code;
+
     chunk.memory = static_cast<char *>(malloc(1));  /* will be grown as needed by the realloc above */ 
     chunk.size = 0;    /* no data at this point */ 
  
     curl_global_init(CURL_GLOBAL_ALL);
     curl_handle = curl_easy_init();
-    curl_easy_setopt(curl_handle, CURLOPT_URL, url);
+    curl_easy_setopt(curl_handle, CURLOPT_URL, url.c_str());
     if(!headers.empty()){
         for (auto& h : headers){
             list = curl_slist_append(list, h.c_str());
@@ -217,65 +256,39 @@ std::string downloadPage(const char* url, std::vector<std::string> headers, std:
 
     curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0L);
     curl_easy_perform(curl_handle);
+    curl_easy_getinfo (curl_handle, CURLINFO_RESPONSE_CODE, &status_code);
     curl_easy_cleanup(curl_handle);
     res = std::string(chunk.memory);
     free(chunk.memory);
  
     curl_global_cleanup();
-    return res;
+    return status_code;
 }
 
-std::vector<std::uint8_t> downloadPageBinary(const char* url, std::vector<std::string> headers, std::string body){
-    CURL *curl_handle; 
-    struct MemoryStruct chunk;
-    struct curl_slist *list = NULL;
- 
-    chunk.memory = static_cast<char *>(malloc(1));  /* will be grown as needed by the realloc above */ 
-    chunk.size = 0;    /* no data at this point */ 
- 
-    curl_global_init(CURL_GLOBAL_ALL);
-    curl_handle = curl_easy_init();
-    curl_easy_setopt(curl_handle, CURLOPT_URL, url);
-    if(!headers.empty()){
-        for (auto& h : headers){
-            list = curl_slist_append(list, h.c_str());
-        }
-        curl_easy_setopt(curl_handle, CURLOPT_HTTPHEADER, list);
-    }
-    if(body != "") {
-        curl_easy_setopt(curl_handle, CURLOPT_POSTFIELDS, body.c_str());
-    }
-
-    curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback2);
-    curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)&chunk);
-    curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, API_AGENT);
-
-    curl_easy_setopt(curl_handle, CURLOPT_SSL_VERIFYPEER, 0L);
-    curl_easy_perform(curl_handle);
-    curl_easy_cleanup(curl_handle);
-    std::vector<std::uint8_t> res(chunk.memory, chunk.memory + ((sizeof(chunk.memory)) * (chunk.size + 16)));
-    free(chunk.memory);
- 
-    curl_global_cleanup();
-    return res;
-}
-
-nlohmann::ordered_json getRequest(std::string url, std::vector<std::string> headers, std::string body) {
+long getRequest(const std::string& url, nlohmann::ordered_json& res, const std::vector<std::string>& headers, const std::string& body) {
     std::string request;
-    request = downloadPage(url.c_str(), headers, body);
+    long status_code = downloadPage(url, request, headers, body);
 
-    if(json::accept(request))   return nlohmann::ordered_json::parse(request);
-    else                        return nlohmann::ordered_json::object();
+    if(json::accept(request))   res = nlohmann::ordered_json::parse(request);
+    else                        res = nlohmann::ordered_json::object();
+
+    return status_code;
 }
 
-std::vector<std::pair<std::string, std::string>> getLinks(const char *url) {
-    std::string request;
-    request = downloadPage(url);
-
-    nlohmann::ordered_json jason = json::accept(request) ? nlohmann::ordered_json::parse(request) : nlohmann::ordered_json::object();
+std::vector<std::pair<std::string, std::string>> getLinks(const std::string& url) {
+    nlohmann::ordered_json request; 
+    getRequest(url, request);
 
     std::vector<std::pair<std::string, std::string>> res;
-    for (auto it = jason.begin(); it != jason.end(); ++it) {
+    for (auto it = request.begin(); it != request.end(); ++it) {
+        res.push_back(std::make_pair(it.key(), it.value()));
+    }
+    return res;
+}
+
+std::vector<std::pair<std::string, std::string>> getLinksFromJson(const nlohmann::ordered_json& json_object) {
+    std::vector<std::pair<std::string, std::string>> res;
+    for (auto it = json_object.begin(); it != json_object.end(); ++it) {
         res.push_back(std::make_pair(it.key(), it.value()));
     }
     return res;
