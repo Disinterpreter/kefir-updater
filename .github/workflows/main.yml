@@ -18,7 +18,7 @@ jobs:
         
     - name: Building aio-switch-updater
       run: |
-        make -C aiosu-forwarder -f Makefile
+        make -f Makefile
         make -j$(nproc)
         
     - uses: actions/upload-artifact@master
