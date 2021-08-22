@@ -7,6 +7,6 @@
 [submodule "aiosu-rcm"]
 	path = aiosu-rcm
 	url = https://github.com/HamletDuFromage/aiosu-rcm
-[submodule "payload"]
-	path = payload
+[submodule "TegraExplorer"]
+	path = TegraExplorer
 	url = https://github.com/rashevskyv/TegraExplorer

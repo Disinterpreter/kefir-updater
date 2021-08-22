@@ -166,9 +166,9 @@ $(ROMFS):
 	@rm $(CURDIR)/$(ROMFS)/i18n/*/installer.json $(CURDIR)/$(ROMFS)/i18n/*/main.json $(CURDIR)/$(ROMFS)/i18n/*/popup.json $(CURDIR)/$(ROMFS)/i18n/*/custom_layout.json
 
 $(BUILD): $(ROMFS)
-	@$(MAKE) -C $(CURDIR)/payload -f $(CURDIR)/payload/Makefile
+	@$(MAKE) -C $(CURDIR)/TegraExplorer -f $(CURDIR)/TegraExplorer/Makefile
 	[ -d $(CURDIR)/output ] || mkdir -p $(CURDIR)/output
-	@cp $(CURDIR)/payload/output/TegraExplorer_small.bin $(CURDIR)/output/kefir-updater.bin
+	@cp $(CURDIR)/TegraExplorer/output/TegraExplorer_small.bin $(CURDIR)/output/kefir-updater.bin
 	@[ -d $@ ] || mkdir -p $@
 	@MSYS2_ARG_CONV_EXCL="-D;$(MSYS2_ARG_CONV_EXCL)" $(MAKE) --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
 	@cp $(OUTPUT).nro $(CURDIR)/output/kefir-updater.nro
